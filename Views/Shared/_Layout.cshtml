@@ -31,6 +31,7 @@
             </div>
             @if (currentUser != null)
             {
+                @Helper.IconCmd("Notification", "", "menu-Icon fa fa fa-bell", "Notifications")
                 @Helper.avatarLink(currentUser.Avatar, "/Accounts/Profil")
 
                 @Helper.IconCmd("Accounts", "Logout", "menu-Icon fa fa-sign-out", "Se déconnecter...")
@@ -51,3 +52,10 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+
+
+@*<span id="NotificationsIcon"
+      class="icon fa fa-bell"
+      title="Notifications"
+      data-placement="bottom">
+</span>*@

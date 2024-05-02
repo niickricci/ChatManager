@@ -1,64 +1,39 @@
 ﻿
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room</title>
-    <link href="/Content/css?v=U8uUuv0fnlN_U9pPIgMFJeucvHxhljnFUx21QSfT5x81" rel="stylesheet" />
 
-    <script src="/bundles/modernizr?v=inCVuEFe6J4Q07A0AcRsbJic_UE5MwpRMNGcOtk94TE1"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div style="display:grid; grid-template-columns: 65px auto; align-items:center">
+        <img src="/Content/UI-Icons/chatRoom.png" style="width:56px" />
+        <h3>Salle de discussions</h3>
+    </div>
+    <hr />
 
-</head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="menu">
-            <div class="menuLeft">
-                <a href="/Home/About">
-                    <img src="/info-icon.png" class="menuIcon" title="A propos..." />
-                </a>
+    <div class="main">
+        <div style="display:grid; grid-template-columns:65px auto; column-gap:10px;">
+            <div class="friendsListContainer" id="friendsListContainer"
+                 title="Cliquez sur un de vos amis pour clavarder avec lui..."> </div>
+            <div>
+                <div class="messagesPanel" id="messagesPanel" title="Cliquez sur un de vos messages pour l'éditer..."></div>
+                <div class="sendMessageLayout" id="sendMessagePanel">
+                    <input id="message"
+                           class="form-control"
+                           style="width:100% !important; max-width:1000px !important;"
+                           placeholder="Tapez votre message ici ..."
+                           title="Les urls d'image sont prises en compte." />
+                    <span id="send"
+                          class="icon fa fa-paper-plane"
+                          title="Envoyer"
+                          data-placement="bottom">
+                    </span>
 
-                <a href="/ChatRoom/Index">
-                    <img src="/Content/UI-Icons/chatRoom.png" class="menuIcon" title="Salle de clavardage..." />
-                </a>
-                <a href="/Friendships/FriendsList">
-                    <img src="/Content/UI-Icons/friendships.png" class="menuIcon" title="Gestion des amiti&#233;s..." />
-                </a>
-                <a href="/Accounts/UsersList" class="menu-Icon fa fa-users"></a>
-                <a href="/Accounts/GroupEmail" class="menu-Icon fa fa-envelope"></a>
-                <a href="/Accounts/LoginsJournal" class="menu-Icon fa fa-calendar"></a>
-            </div>
-            <span id="NotificationsIcon"
-                  class="icon fa fa fa-bell"
-                  title="Notifications"
-                  data-placement="bottom">
-            </span>
-            <a href="/Accounts/Profil" data-toggle="tooltip" title="Modifier le profil....">
-                <div class="UserSmallAvatar"
-                     style="background: url(/Images_Data/User_Avatars/a9752be9-251e-4bab-ad8d-8fe93c29a8ef.jpeg)"></div>
-            </a>
-            <a href="/Accounts/Logout" style="text-decoration:none">
-                <div class="icon fa fa fa-sign-out"
-                     title="Se d&#233;connecter..."
-                     data-placement="bottom">
                 </div>
-            </a>
+            </div>
         </div>
     </div>
-    <div class="container body-content">
 
 
 
-        <div style="display:grid; grid-template-columns: 65px auto; align-items:center">
-            <img src="/Content/UI-Icons/chatRoom.png" style="width:56px" />
-            <h3>Salle de discussions</h3>
-        </div>
-
-        <hr />
-        <div class="main">
+    @*<div class="main">
             <div style="display:grid; grid-template-columns:65px auto; column-gap:10px;">
                 <div class="friendsListContainer" id="friendsListContainer"
                      title="Cliquez sur un de vos amis pour clavarder avec lui..."> </div>
@@ -79,194 +54,181 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
 
 
-    </div>
+@*<script>
+    $(function () {
+        let friendsPanelUpdater = new PartialRefresh("/Chat/GetFriendsList", "friendsListContainer", 5, UpdateFriendsListUIEventCallbacks);
+        let messagesPanelUpdater = new PartialRefresh("/Chat/GetMessages", "messagesPanel", 5, UpdateMessagesPanelUIEventCallbacks);
+        let currentTargetId = 0;
+        if (currentTargetId == 0)
+            $("#sendMessagePanel").hide();
 
-    <script src="/bundles/jquery?v=A9fvIMZV0duPnDnk4RetflNspNatA7ffQxnZ4hHJN0c1"></script>
+        function UpdateFriendsListUIEventCallbacks() {
+            $(".unselectedTarget").click(function () {
+                var userId = $(this).attr("userid");
+                ajaxActionCall("/Chat/SetCurrentTarget/" + userId, () => { friendsPanelUpdater.refresh(true); messagesPanelUpdater.refresh(true); });
+                $("#sendMessagePanel").show();
+            })
+        }
 
-    <script src="/bundles/bootstrap?v=M4Nk6kIOwMFflsEKET0iPL9i5YBqbzMzvUOrd8gyCnw1"></script>
+        // Message envoie
+        function sendMessage() {
+            var message = $('#message').val();
+            $('#message').val("");
+            if (message != "") {
+                messagesPanelUpdater.command("/Chat/Send?message=" + message, UpdateMessagesPanelUIEventCallbacks);
+            }
+        }
+        $('#message').keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                sendMessage();
+            }
+        });
+        $('#message').focus(function (event) {
+            ajaxActionCall("/chat/IsTyping");
+        });
+        $('#message').blur(function (event) {
+            ajaxActionCall("/chat/StopTyping");
+        });
+        $(document).on('keyup', function (event) {
+            if (event.key == "Escape") {
+                $("#message").val("");
+            }
+        });
 
+        let editor = null;
+        let targetedMessageContainer = null;
 
-    <script src="/bundles/jqueryval?v=L1jdQEUo1fAmrZy2I5i2a7jpO1YEaX_uh6kcF7Jx1Xo1"></script>
+        function deleteMessageEditor() {
+            if (editor != null) {
+                editor.remove();
+                messagesPanelUpdater.restart();
+                editor = null;
+            }
+            if (targetedMessageContainer != null)
+                targetedMessageContainer.show();
+        }
+        $(document).click(function () { deleteMessageEditor(); })
 
+        function createMessageEditor(messageId) {
+            deleteMessageEditor();
+            messagesPanelUpdater.pause();
+            targetedMessageContainer = $(`#sent_${messageId}`);
 
-    <script>
-        $(function () {
-            let friendsPanelUpdater = new PartialRefresh("/Chat/GetFriendsList", "friendsListContainer", 5, UpdateFriendsListUIEventCallbacks);
-            let messagesPanelUpdater = new PartialRefresh("/Chat/GetMessages", "messagesPanel", 5, UpdateMessagesPanelUIEventCallbacks);
-            let currentTargetId = 0;
-            if (currentTargetId == 0)
-                $("#sendMessagePanel").hide();
-
-            function UpdateFriendsListUIEventCallbacks() {
-                $(".unselectedTarget").click(function () {
-                    var userId = $(this).attr("userid");
-                    ajaxActionCall("/Chat/SetCurrentTarget/" + userId, () => { friendsPanelUpdater.refresh(true); messagesPanelUpdater.refresh(true); });
-                    $("#sendMessagePanel").show();
+            messagesPanelUpdater.command(`/Chat/GetMessage?id=${messageId}`, function (messageText) {
+                targetedMessageContainer.hide();
+                let input = $(`<textarea>${messageText.trim()}</textarea>"`);
+                let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
+                let deleteCmd = $(`<span class="icon smallerIcon fa fa-trash" title="Effacer ce message"></span>`);
+                editor = $(`<div class="messageEditorContainer" id="messageEditor" >`);
+                editor.append(input, acceptCmd, deleteCmd);
+                editor.insertAfter(targetedMessageContainer);
+                input.height(input[0].scrollHeight - 20);
+                input.focus();
+                input.val(input.val() + ' ');
+                input.keyup(function (event) {
+                    if (event.key == "Escape") {
+                        targetedMessageContainer.show();
+                        deleteMessageEditor();
+                        messagesPanelUpdater.restart();
+                    }
                 })
-            }
-
-            // Message envoie
-            function sendMessage() {
-                var message = $('#message').val();
-                $('#message').val("");
-                if (message != "") {
-                    messagesPanelUpdater.command("/Chat/Send?message=" + message, UpdateMessagesPanelUIEventCallbacks);
-                }
-            }
-            $('#message').keypress(function (event) {
-                var keycode = (event.keyCode ? event.keyCode : event.which);
-                if (keycode == '13') {
-                    sendMessage();
-                }
-            });
-            $('#message').focus(function (event) {
-                ajaxActionCall("/chat/IsTyping");
-            });
-            $('#message').blur(function (event) {
-                ajaxActionCall("/chat/StopTyping");
-            });
-            $(document).on('keyup', function (event) {
-                if (event.key == "Escape") {
-                    $("#message").val("");
-                }
-            });
-
-            let editor = null;
-            let targetedMessageContainer = null;
-
-            function deleteMessageEditor() {
-                if (editor != null) {
-                    editor.remove();
+                input.click(function (event) {
+                    event.stopPropagation()
+                })
+                acceptCmd.click(function () {
+                    messagesPanelUpdater.command(`/Chat/UpdateMessage?id=${messageId}&message=${input.val()}`);
                     messagesPanelUpdater.restart();
-                    editor = null;
-                }
-                if (targetedMessageContainer != null)
-                    targetedMessageContainer.show();
-            }
-            $(document).click(function () { deleteMessageEditor(); })
-
-            function createMessageEditor(messageId) {
-                deleteMessageEditor();
-                messagesPanelUpdater.pause();
-                targetedMessageContainer = $(`#sent_${messageId}`);
-
-                messagesPanelUpdater.command(`/Chat/GetMessage?id=${messageId}`, function (messageText) {
-                    targetedMessageContainer.hide();
-                    let input = $(`<textarea>${messageText.trim()}</textarea>"`);
-                    let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
-                    let deleteCmd = $(`<span class="icon smallerIcon fa fa-trash" title="Effacer ce message"></span>`);
-                    editor = $(`<div class="messageEditorContainer" id="messageEditor" >`);
-                    editor.append(input, acceptCmd,  deleteCmd);
-                    editor.insertAfter(targetedMessageContainer);
-                    input.height(input[0].scrollHeight - 20);
-                    input.focus();
-                    input.val(input.val() + ' ');
-                    input.keyup(function (event) {
-                        if (event.key == "Escape") {
-                            targetedMessageContainer.show();
-                            deleteMessageEditor();
+                })
+                deleteCmd.click(function () {
+                    bootbox.confirm("Effacer ce message?", function (result) {
+                        if (result) {
+                            messagesPanelUpdater.command(`/Chat/DeleteMessage?id=${messageId}`);
                             messagesPanelUpdater.restart();
                         }
                     })
-                    input.click(function (event) {
-                        event.stopPropagation()
-                    })
-                    acceptCmd.click(function () {
-                        messagesPanelUpdater.command(`/Chat/UpdateMessage?id=${messageId}&message=${input.val()}`);
-                        messagesPanelUpdater.restart();
-                    })
-                    deleteCmd.click(function () {
-                        bootbox.confirm("Effacer ce message?", function (result) {
-                            if (result) {
-                                messagesPanelUpdater.command(`/Chat/DeleteMessage?id=${messageId}`);
-                                messagesPanelUpdater.restart();
-                            }
-                        })
-                    })
                 })
-            }
+            })
+        }
 
-            function UpdateMessagesPanelUIEventCallbacks() {
+        function UpdateMessagesPanelUIEventCallbacks() {
+            $("#typing").hide();
+            $(".editMessage").hide();
+            $("#messagesPanel").scrollTop($("#messagesPanel")[0].scrollHeight + 100);
+
+            $(".contentImage").click(function (event) {
+                event.stopPropagation();
+            })
+            $("a").click(function (event) {
+                event.stopPropagation();
+            })
+            $(".sent").click(function () {
+                var messageId = $(this).attr("id").split("_")[1];
+                createMessageEditor(messageId);
+            });
+        }
+
+        setInterval(() => { ajaxActionCall("/Chat/IsTargetTyping", UpdateTyping); }, 3000);
+
+        function UpdateTyping(show) {
+            if (show)
+                $("#typing").show();
+            else
                 $("#typing").hide();
-                $(".editMessage").hide();
-                $("#messagesPanel").scrollTop($("#messagesPanel")[0].scrollHeight + 100);
+        }
 
-                $(".contentImage").click(function (event) {
-                    event.stopPropagation();
-                })
-                $("a").click(function (event) {
-                    event.stopPropagation();
-                })
-                $(".sent").click(function () {
-                    var messageId = $(this).attr("id").split("_")[1];
-                    createMessageEditor(messageId);
-                });
-            }
-
-            setInterval(() => { ajaxActionCall("/Chat/IsTargetTyping", UpdateTyping); }, 3000);
-
-            function UpdateTyping(show) {
-                if (show)
-                    $("#typing").show();
-                else
-                    $("#typing").hide();
-            }
-
-            $("#send").click(function () {
-                sendMessage();
-            })
+        $("#send").click(function () {
+            sendMessage();
         })
-    </script>
+    })
+</script>
 
 
-    <script>
-        $(function () {
-            let NotificationsDisabled = false;
-            if (!NotificationsDisabled) {
-                setInterval(() => {
-                    $.ajax({
-                        url: "/Accounts/UserHasNotifications",
-                        dataType: "text",
-                        success: (hasNotifications) => {
-                            console.log("Has notification : ", JSON.parse(hasNotifications))
-                            if (JSON.parse(hasNotifications))
-                                $("#NotificationsIcon").addClass("blink");
-                            else
-                                $("#NotificationsIcon").removeClass("blink");
-                        }
-                    })
-                }, 2 * 1000)
-            }
-            $("#NotificationsIcon").click(function () {
-                if (!NotificationsDisabled) {
-                    $.ajax({
-                        url: "/Accounts/GetUserNotifications",
-                        dataType: "text",
-                        success: (notifications) => {
-                            notifications = JSON.parse(notifications);
-                            console.log("Messages: ", notifications);
-                            if (notifications.length > 0) {
-                                let messages = "";
-                                notifications.forEach(message => {
-                                    messages += message + "<br>";
-                                })
-                                bootbox.alert(messages);
-                            }
-                            else
-                                bootbox.alert("Aucune notification");
+<script>
+    $(function () {
+        let NotificationsDisabled = false;
+        if (!NotificationsDisabled) {
+            setInterval(() => {
+                $.ajax({
+                    url: "/Accounts/UserHasNotifications",
+                    dataType: "text",
+                    success: (hasNotifications) => {
+                        console.log("Has notification : ", JSON.parse(hasNotifications))
+                        if (JSON.parse(hasNotifications))
+                            $("#NotificationsIcon").addClass("blink");
+                        else
                             $("#NotificationsIcon").removeClass("blink");
+                    }
+                })
+            }, 2 * 1000)
+        }
+        $("#NotificationsIcon").click(function () {
+            if (!NotificationsDisabled) {
+                $.ajax({
+                    url: "/Accounts/GetUserNotifications",
+                    dataType: "text",
+                    success: (notifications) => {
+                        notifications = JSON.parse(notifications);
+                        console.log("Messages: ", notifications);
+                        if (notifications.length > 0) {
+                            let messages = "";
+                            notifications.forEach(message => {
+                                messages += message + "<br>";
+                            })
+                            bootbox.alert(messages);
                         }
-                    })
-                } else {
-                    bootbox.alert("Notifications désactivées");
-                }
-            })
+                        else
+                            bootbox.alert("Aucune notification");
+                        $("#NotificationsIcon").removeClass("blink");
+                    }
+                })
+            } else {
+                bootbox.alert("Notifications désactivées");
+            }
         })
+    })
 
-    </script>
-
-</body>
-</html>
+</script>*@
