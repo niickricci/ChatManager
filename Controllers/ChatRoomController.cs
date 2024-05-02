@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Razor.Tokenizer.Symbols;
 
 namespace ChatManager.Controllers
 {
@@ -15,46 +16,19 @@ namespace ChatManager.Controllers
             return View();
         }
 
-        public ActionResult GetMessages(bool forceRefresh = false, string[] filterType = null, string keyword = "")
+        public ActionResult GetFriendList(bool forceRefresh = false)
         {
             if (forceRefresh || OnlineUsers.HasChanged() || DB.Users.HasChanged || DB.UserFriendships.HasChanged)
             {
                 IEnumerable<User> users = new List<User>();
+                users = DB.Users.SortedUsers();
+                var myFriends = users.Where(u => DB.UserFriendships.ToList().Any(uf => uf.UserID == u.Id && uf.FriendId == OnlineUsers.GetSessionUser().Id && uf.IsFriend) && !u.Blocked);
 
-                if (filterType != null && filterType.Length > 0)
-                {
-                    users = DB.Users.SortedUsers();
-                    List<User> filteredUsers = new List<User>();
-
-                    foreach (var type in filterType)
-                    {
-                        switch (type)
-                        {
-                            case "myfriends":
-                                filteredUsers.AddRange(users.Where(u => DB.UserFriendships.ToList().Any(uf => uf.UserID == u.Id && uf.FriendId == OnlineUsers.GetSessionUser().Id && uf.IsFriend) && !u.Blocked).Where(u => u.GetFullName().ToLower().Contains(keyword.ToLower())));
-                                break;
-                            case "notfriends":
-                                filteredUsers.AddRange(users.Where(u => !DB.UserFriendships.ToList().Any(uf => uf.UserID == u.Id && uf.FriendId == OnlineUsers.GetSessionUser().Id && uf.IsFriend) && !DB.UserFriendships.ToList().Any(uf => uf.UserID == u.Id && uf.FriendId == OnlineUsers.GetSessionUser().Id && !uf.isPending) && !DB.UserFriendships.ToList().Any(uf => uf.UserID == u.Id && uf.FriendId == OnlineUsers.GetSessionUser().Id && !uf.isDeclined) && !u.Blocked).Where(u => u.GetFullName().ToLower().Contains(keyword.ToLower())));
-                                break;
-                            case "requests":
-                                filteredUsers.AddRange(users.Where(u => DB.UserFriendships.ToList().Any(uf => uf.UserID == u.Id && uf.FriendId == OnlineUsers.GetSessionUser().Id && !uf.IsFriend && uf.isPending) && !u.Blocked).Where(u => u.GetFullName().ToLower().Contains(keyword.ToLower())));
-                                break;
-                            case "pending":
-                                filteredUsers.AddRange(users.Where(u => DB.UserFriendships.ToList().Any(uf => uf.FriendId == u.Id && uf.UserID == OnlineUsers.GetSessionUser().Id && !uf.IsFriend && uf.isPending) && !u.Blocked).Where(u => u.GetFullName().ToLower().Contains(keyword.ToLower())));
-                                break;
-                            case "declined":
-                                filteredUsers.AddRange(users.Where(u => DB.UserFriendships.ToList().Any(uf => uf.FriendId == u.Id && uf.UserID == OnlineUsers.GetSessionUser().Id && !uf.IsFriend && uf.isDeclined) && !u.Blocked).Where(u => u.GetFullName().ToLower().Contains(keyword.ToLower())));
-                                break;
-                            case "blocked":
-                                filteredUsers.AddRange(users.Where(u => u.Blocked).Where(u => u.GetFullName().ToLower().Contains(keyword.ToLower())));
-                                break;
-                        }
-                    }
-                    users = filteredUsers;
+                if(myFriends.Count() > 0) {
+                    return PartialView(myFriends);
                 }
-                return PartialView(users);
+                return null;
             }
-
             return null;
         }
     }
