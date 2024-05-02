@@ -1,0 +1,91 @@
+@model IEnumerable<ChatManager.Models.User>
+@{
+    var u = ChatManager.Models.DB.Users;
+    IEnumerable<ChatManager.Models.User> liste = Model;
+}
+
+
+
+
+@foreach (var item in Model)
+{
+    if (item.Id != ChatManager.Models.OnlineUsers.GetSessionUser().Id)
+    {
+        var emailReference = "mailto:" + item.Email;
+        bool isOnline = ChatManager.Models.OnlineUsers.IsOnLine(item.Id);
+
+        <div class="userContainer" style="font-size:14px;">
+            <a href="/Accounts/Edit/@item.Id" title="Compte créé le @item.CreationDate.ToShortDateString()">
+                @Helper.AvatarUser(item, "UserSmallAvatar")
+            </a>
+            <div style="text-align:center" title="Status de connexion">
+                @Helper.OnLineStatusIcon(isOnline, item.Blocked)
+            </div>
+            @if (u.IsFriends(item.Id))
+            {
+                //Est Amis
+                <div style="text-align:center" title="Status de connexion">
+                    <div class="icon green fa fa-check-circle " title="@item.GetFullName() est votre amis"></div>
+                </div>
+                //Retirer de la liste d'amis
+                <div style="text-align:center" title="Status de connexion">
+                    <div id="Remove_@item.Id" class="REMOVE_FRIEND icon red fa fa-times" title="Retirer @item.GetFullName() de votre liste d'amis"></div>
+                </div>
+            }
+            //Demande envoyée en attente de réponse
+            else if (u.IsFriendRequestPending(item.Id))
+            {
+                //Attente de reponse de demande d'amitié
+                <div style="text-align:center" title="Status de connexion">
+                    <div class="icon green fa fa-clock-o" title="Demande envoyée, en attente de réponse de @item.GetFullName()"></div>
+                </div>
+                //Retirer demande d'amis
+                <div style="text-align:center" title="Status de connexion">
+                    <div id="CancelRequest_@item.Id" class="CANCEL_REQUEST icon red fa fa-times" title="Retirer la demande d’amitié envoyée à @item.GetFullName()"></div>
+                </div>
+            }
+            //Le joueur a décliné la demande d’amitié
+            else if (u.IsFriendRequestDeclined(item.Id))
+            {
+                //Demande d’amitié décliné par le joueur
+                <div style="text-align:center" title="Status de connexion">
+                    <div class="icon red fa fa-times-circle" title="Demande d’amitié décliné par @item.GetFullName()"></div>
+                </div>
+                // Demande d’amitié
+                if (isOnline) //if online
+                {
+                    <div style="text-align:center" title="Status de connexion">
+                        <div id="add_@item.Id" class="ADD_USER icon green fa fa-plus-circle" title="Ajouter l'usager @item.GetFullName()"></div>
+                    </div>
+                }
+            }
+            //Le joueur a envoyé une demande d’amitié
+            else if (u.HasPendingFriendRequest(item.Id))
+            {
+                //Accepter d’amitié décliné par le joueur
+                <div style="text-align:center" title="Status de connexion">
+                    <div id="Accept_@item.Id" class="ACCEPT_REQUEST icon green fa fa-check" title="Accepter la demande d’amitié décliné par @item.GetFullName()"></div>
+                </div>
+                // Refuser demande d’amitié
+                <div style="text-align:center" title="Status de connexion">
+                    <div id="Decline_@item.Id" class="DECLINE_REQUEST icon red fa fa-times" title="Refuser la demande d’amitié décliné par @item.GetFullName()"></div>
+                </div>
+            }
+            //Le joueur est bloqué par l'administration
+            else if (item.Blocked)
+            {
+                //Joueur blocked
+                <div style="text-align:center" title="Status de connexion">
+                    <div class="icon red fa fa-ban" title="L'usager @item.GetFullName() bloqué par les administrateurs"></div>
+                </div>
+            }
+            else
+            {
+                //Pas encore ami//Ajouter l'usager
+                <div style="text-align:center" title="Status de connexion">
+                    <div id="add_@item.Id" class="ADD_USER icon green fa fa-plus-circle" title="Ajouter l'usager @item.GetFullName()"></div>
+                </div>
+            }
+        </div>
+    }
+}
