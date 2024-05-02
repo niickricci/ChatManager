@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "FriendsList";
+}
+
+<style>
+    h2.with-icon {
+        display: flex;
+        align-items: center;
+    }
+
+        h2.with-icon img {
+            margin-right: 10px;
+        }
+</style>
+<div class="formLayout">
+    <h2 class="with-icon">
+        <img src="/Content/UI-Icons/friendships.png" alt="Icône des amitiés" class="menuIcon">
+        Gestion des amitiés
+    </h2>
+    <div style="display: flex; flex-direction: column">
+        @*Search bar*@
+        <div class="input-group" style="display: flex; flex-direction: row">
+            <div class="form-outline" data-mdb-input-init style="display:grid; grid-template-columns:295px 3px;">
+                <input type="search" id="search" class="form-control" placeholder="Recherche..." />
+            </div>
+            <button type="button" id="searchBtn" class="btn btn-primary" data-mdb-ripple-init>
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        @*Filter*@
+        <div style="display: flex; flex-direction: row; margin-top: 20px; align-items: center; gap:20px;">
+            @*CB Demande d’amitié*@
+            <div style="display: flex; flex-direction: row; justify-content: center; align-content: center; align-items:center; gap: 5px;">
+                <input type="checkbox" class="CBNotFriend" title="Afficher/masquer les usagers qui sont pas encore ami avec vous" checked/>
+                <i style="font-size: 18px !important;" class="green fa fa-plus-circle"></i>
+            </div>
+            @*CB Accepter, décliner *@
+            <div style="display: flex; flex-direction: row; justify-content: center; align-content: center; align-items:center; gap: 5px;">
+                <input type="checkbox" class="CBRequests" title="Afficher/masquer les requêtes d'amitié reçues" checked/>
+                <i style="font-size: 18px !important;" class="green fa fa-check"></i>
+            </div>
+            @*CB Retirer la demande d’amitié*@
+            <div style="display: flex; flex-direction: row; justify-content: center; align-content: center; align-items:center; gap: 5px;">
+                <input type="checkbox" class="CBPendingRequest" title="Afficher/masquer les requêtes d'amitié envoyées en attente de réponse" checked/>
+                <i style="font-size: 18px !important;" class="green fa fa-clock-o "></i>
+            </div>
+            @*CB Retirer la demande d’amitié*@
+            <div style="display: flex; flex-direction: row; justify-content: center; align-content: center; align-items:center; gap: 5px;">
+                <input type="checkbox" class="CBShowFriend" title="Afficher/masquer tous les amis" checked/>
+                <i style="font-size: 18px !important;" class="green fa fa-check-circle "></i>
+            </div>
+            @*CB Demande d’amitié décliné Demande d’amitié fa-times-circle fa-plus-circle
+                par l’usager en ligne ou Demande d’amitié*@
+            <div style="display: flex; flex-direction: row; justify-content: center; align-content: center; align-items:center; gap: 5px;">
+                <input type="checkbox" class="CBDeclined" title="Afficher/masquer toutes les demandes refusées ou déclinées" checked/>
+                <i style="font-size: 18px !important;" class="red fa fa-times-circle"></i>
+            </div>
+            @*CB Usager bloqué par l’administrateur *@
+            <div style="display: flex; flex-direction: row; justify-content: center; align-content: center; align-items:center; gap: 5px;">
+                <input type="checkbox" class="CBBlocked" title="Afficher/masquer tous les usagers bloqués" checked/>
+                <i style="font-size: 18px !important;" class="red fa fa-ban"></i>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div id="UsersListContainer">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+        $(function () {
+            initTimeout(12);
+            let url = "/Friendships/GetFriendList"
+            let GetUsersList = new PartialRefresh("@Url.Action("GetFriendList")", "UsersListContainer", 5, UpdateCheckboxChangeCallback);
+
+            function updateContent() {
+                // Init
+                let filterTypes = [];
+                let keyword = "";
+
+                if ($(".CBShowFriend").prop('checked')) filterTypes.push('myfriends');
+                if ($(".CBNotFriend").prop('checked')) filterTypes.push('notfriends');
+                if ($(".CBRequests").prop('checked')) filterTypes.push('requests');
+                if ($(".CBPendingRequest").prop('checked')) filterTypes.push('pending');
+                if ($(".CBDeclined").prop('checked')) filterTypes.push('declined');
+                if ($(".CBBlocked").prop('checked')) filterTypes.push('blocked');
+
+
+                let filterType = '';
+                if (filterTypes.length > 0) {
+                    filterType = '?filterType=' + filterTypes.join('&filterType=');
+                }
+
+                let updatedUrl = url + filterType;
+                if ($("#search").length > 0) {
+                    keyword = $("#search").val();
+                    updatedUrl += '&keyword=' + encodeURIComponent(keyword); //pour les espaces
+                }
+               
+
+                GetUsersList.setUrl(updatedUrl);
+                GetUsersList.command(updatedUrl);
+            }
+
+            //OnLoad
+            $(document).ready(function () {
+                updateContent();
+            });
+
+            //onClick
+            $("#searchBtn").click(function () {
+                updateContent(); 
+            });
+
+            //onChange
+            $(".CBShowFriend, .CBNotFriend, .CBRequests, .CBPendingRequest, .CBDeclined, .CBBlocked").change(function () {
+                updateContent();
+            });
+
+            function UpdateCheckboxChangeCallback() {
+
+                //Add to friends list
+                $(".ADD_USER").click(
+                    function () {
+                        let userid = this.id.split('_')[1];
+                        GetUsersList.confirmedCommand(this.title + ' ?', "@Url.Action("AddUser")" + "?userId=" + userid);
+                    }
+                );
+                //Remove friend from friends list
+                $(".REMOVE_FRIEND").click(
+                    function () {
+                        let userid = this.id.split('_')[1];
+                        GetUsersList.confirmedCommand(this.title + ' ?', "@Url.Action("RemoveFriend")" + "?userId=" + userid);
+                    }
+                );
+
+                //Cancel add to friens list request
+                $(".CANCEL_REQUEST").click(
+                    function () {
+                        let userid = this.id.split('_')[1];
+                        GetUsersList.confirmedCommand(this.title + ' ?', "@Url.Action("CancelFriendsRequest")" + "?userId=" + userid);
+                    }
+                );
+                //Accepts the pending friends request
+                $(".ACCEPT_REQUEST").click(
+                    function () {
+                        let userid = this.id.split('_')[1];
+                        GetUsersList.confirmedCommand(this.title + ' ?', "@Url.Action("AcceptFriendsRequest")" + "?userId=" + userid);
+                    }
+                );
+
+                //Decline pending friends request
+                $(".DECLINE_REQUEST").click(
+                    function () {
+                        let userid = this.id.split('_')[1];
+                        GetUsersList.confirmedCommand(this.title + ' ?', "@Url.Action("DeclineFriendsRequest")" + "?userId=" + userid);
+                    }
+                );
+            }
+        })
+</script>
+}

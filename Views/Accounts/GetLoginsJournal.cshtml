@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ChatManager.Models.User>
+@{
+    var listeJournal = ChatManager.Models.DB.UserLogs.ToList();
+    var groupByLogs = listeJournal.GroupBy(l => l.LoginTime.Date).OrderByDescending(g => g.Key);
+    var today = DateTime.Today;
+}
+
+@foreach (var gbLogs in groupByLogs)
+{
+    var date = gbLogs.Key;
+    <div>
+
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; padding:10px;">
+            <h4>@date.ToShortDateString()</h4>
+            <div id="delete_@date" style="margin-bottom: 2px" class="DELETE_JOURNAL icon fa fa-window-close-o" title="Effacer le journal des connexions du @date.ToShortDateString()"></div>
+        </div>
+
+        @foreach (var item in Model)
+        {
+            var userLogsForDate = gbLogs.Where(l => l.UserID == item.Id).OrderByDescending(l => l.LoginTime).ToList();
+            var isToday = date == today;
+            bool onlineIconShowing = false;
+
+            foreach (var userLog in userLogsForDate)
+            {
+                string loginTime = userLog.LoginTime.ToString("HH:mm:ss");
+                string logoutTime = userLog.LogoutTime != null ? userLog.LogoutTime.ToString("HH:mm:ss") : "00:00";
+                bool isOnline = ChatManager.Models.OnlineUsers.IsOnLine(item.Id);
+
+                <div class="loginContainer" style="font-size:14px;">
+                    <a style="text-decoration: none; color: black;">
+                        @Helper.AvatarUser(item, "UserSmallAvatar")
+                    </a>
+                    <div style="text-align:center">
+
+                        <div>
+                            <span>@loginTime : </span>
+                            @if (isToday && isOnline && loginTime == logoutTime && !onlineIconShowing)
+                            {
+                                <span>@Helper.OnLineStatusIcon(isOnline, item.Blocked)</span>
+                                onlineIconShowing = true;
+                            }
+                            else if (loginTime == logoutTime)
+                            {
+                                <span><img src="~/Content/UI-icons/timeout.png" class="small_icon" /></span>
+                            }
+                            else
+                            {
+                                @logoutTime
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+    </div>
+    <hr />
+}

@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "LoginsJournal";
+}
+
+<h2>Journal des connexions</h2>
+<hr />
+
+<div id="LoginsJournalContainer">
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(function () {
+        initTimeout(120);
+        let GetLoginsJournal = new PartialRefresh("@Url.Action("GetLoginsJournal")", "LoginsJournalContainer", 5, UpdateCheckboxChangeCallback);
+        function UpdateCheckboxChangeCallback() {
+            $(".DELETE_JOURNAL").click(
+                function () {
+                    let date = this.id.split('_')[1];
+                    GetLoginsJournal.confirmedCommand(this.title + ' ?', "@Url.Action("DeleteLogs")" + "?date=" + date);
+                }
+            );
+        }
+    })
+    </script>
+}
