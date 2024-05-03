@@ -179,6 +179,15 @@ body {
     background-repeat: no-repeat !important;
 }
 
+.UserMediumAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
 .largeLogo {
     width: 380px;
     height: 215px;
@@ -345,6 +354,19 @@ input[type=checkbox] {
     overflow: scroll;
     padding: 5px;
 }
+.unselectedTarget {
+    border: 4px solid #fff;
+    height: 55.5px;
+    width: 55.5px;
+    align-items: center;
+    text-align: center;
+    padding: 4px;
+    border-radius: 50px;
+}
+    .unselectedTarget:hover {
+        background-color: #6dbafc;
+        cursor: pointer;
+    }
 
 .messagesPanel {
     border: 1px solid #ccc;
@@ -353,6 +375,15 @@ input[type=checkbox] {
     overflow: scroll;
     padding: 5px;
     overflow-y: visible;
+}
+
+.messagesHeader {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #3b67b1;
+    color: #e8f0fe;
+    font-size: 1.4em;
 }
 
 .sendMessageLayout {
