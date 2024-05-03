@@ -129,6 +129,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserChats.cs" />
     <Compile Include="Models\GroupEmail.cs" />
     <Compile Include="Models\EmailView.cs" />
     <Compile Include="Models\Gender.cs" />
@@ -230,6 +231,7 @@
     <Content Include="Scripts\selections.js" />
     <Content Include="Scripts\session.js" />
     <Content Include="Scripts\SiteScripts.js" />
+    <Content Include="Views\Accounts\Login.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -264,7 +266,6 @@
     <Content Include="Views\Accounts\EmailChanged.cshtml" />
     <Content Include="Views\Accounts\EmailChangedAlert.cshtml" />
     <Content Include="Views\Accounts\EmailChangedError.cshtml" />
-    <Content Include="Views\Accounts\Login.cshtml" />
     <Content Include="Views\Accounts\Profil.cshtml" />
     <Content Include="Views\Accounts\ProfilForm.cshtml" />
     <Content Include="Views\Accounts\ResetPassword.cshtml" />
@@ -287,6 +288,8 @@
     <Content Include="Views\Accounts\GetLoginsJournal.cshtml" />
     <Content Include="Views\FriendShips\FriendsList.cshtml" />
     <Content Include="Views\FriendShips\GetFriendList.cshtml" />
+    <Content Include="Views\ChatRoom\GetFriendsList.cshtml" />
+    <Content Include="Views\ChatRoom\GetChatRoom.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Notifications\" />
