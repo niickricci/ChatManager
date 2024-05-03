@@ -395,6 +395,25 @@ namespace ChatManager.Models
             }
             return null;
         }
-        //------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------
+        //---------------------------------------User Chat Options--------------------------------------------
+        public IEnumerable<UserChats> GetUsersChats(int applicantId, int recipientId)
+        {
+            User userApplicant = DB.Users.Get(applicantId);
+            User userRecipient = DB.Users.Get(recipientId);
+            var listChat = DB.UserChats.ToList();
+
+            if (userApplicant != null && userRecipient != null)
+            {
+                if (listChat.Any(l => l.UserId == userApplicant.Id && l.FriendId == userRecipient.Id))
+                {
+                    var applicantMessages = listChat.ToList().Where(c => c.UserId == userApplicant.Id && c.FriendId == userRecipient.Id);
+                    return applicantMessages;
+                }
+                return null;
+            }
+            return null;
+        }
+        //----------------------------------------------------------------------------------------------------
     }
 }
