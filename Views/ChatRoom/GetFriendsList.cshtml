@@ -1,0 +1,13 @@
+﻿@model IEnumerable<ChatManager.Models.User>
+
+
+@*Each Friends*@
+@foreach (var user in Model)
+{
+    if (user.Id != ChatManager.Models.OnlineUsers.GetSessionUser().Id)
+    {
+        <div class="unselectedTarget" userid="@user.Id">
+            @Helper.AvatarUserWithoutName(user, "UserSmallAvatar")
+        </div>
+    }
+}

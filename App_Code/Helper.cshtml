@@ -134,6 +134,24 @@
         <div class="ellipsis">@user.GetFullName()</div>
     </div>
 }
+@helper AvatarUserChat(ChatManager.Models.User user, string avatarClass = "UserMediumAvatar")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    var avatarUrl = user.Avatar;
+    <div class="userItem">
+        <div class="@avatarClass" style="background: url(@avatarUrl)"></div>
+        <div class="ellipsis">@user.GetFullName()</div>
+        @Helper.OnLineStatusIcon(ChatManager.Models.OnlineUsers.IsOnLine(user.Id), user.Blocked)
+    </div>
+}
+@helper AvatarUserWithoutName(ChatManager.Models.User user, string avatarClass = "UserMediumAvatar")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    var avatarUrl = user.Avatar;
+    <div class="userItem">
+        <div class="@avatarClass" style="background: url(@avatarUrl)" title="@user.GetFullName()"></div>
+    </div>
+}
 @helper UsersCheckList(IEnumerable<ChatManager.Models.User> users, List<int> selectedUsers, string usersCheckListName = "UsersCheckList")
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
