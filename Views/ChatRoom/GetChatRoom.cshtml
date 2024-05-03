@@ -1,0 +1,42 @@
+﻿@model (IEnumerable<UserChats>, IEnumerable<UserChats>)
+@{
+    var currentUserMessages = Model.Item1;
+    var friendMessages = Model.Item1;
+    ChatManager.Models.User friend = ChatManager.Models.DB.Users.Get((int)Session["currentChatTarget"]);
+    bool isOnline = ChatManager.Models.OnlineUsers.IsOnLine(friend.Id);
+}
+
+
+@*Each Friends*@
+@if (currentUserMessages != null || friendMessages != null)
+{
+    foreach (var msg in currentUserMessages)
+    {
+        <div class="messagesHeader">
+            @if (friend != null)
+            {
+                <h4>Conversation avec </h4>
+                <div style="display: flex; align-items: center; gap:10px">
+                    @Helper.AvatarUserChat(friend, "UserMediumAvatar")
+                </div>
+            }
+        </div>
+    }
+}
+else
+{
+    @*Header for instructions/Current friend selected*@
+    <div class="messagesHeader">
+        @if (friend != null)
+        {
+            <h4>Conversation avec </h4>
+            <div style="display: flex; align-items: center; gap:10px">
+                @Helper.AvatarUserChat(friend, "UserMediumAvatar")
+
+            </div>
+        }
+    </div>
+    <div>
+        <h4>La conversation est vide..</h4>
+    </div>
+}
