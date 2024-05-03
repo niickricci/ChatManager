@@ -16,6 +16,7 @@ namespace ChatManager.Models
         public static Repository<UserType> UserTypes { get; set; }
         public static Repository<UsersLogsJournal> UserLogs { get; set; }
         public static Repository<UserFriendships> UserFriendships { get; set; }
+        public static Repository<UserChats> UserChats { get; set; }
         public static Repository<UnverifiedEmail> UnverifiedEmails { get; set; }
         public static Repository<ResetPasswordCommand> ResetPasswordCommands { get; set; }
        
@@ -25,6 +26,7 @@ namespace ChatManager.Models
             Genders = new Repository<Gender>();
             UserLogs = new Repository<UsersLogsJournal>();
             UserFriendships = new Repository<UserFriendships>();
+            UserChats = new Repository<UserChats>();
             UserTypes = new Repository<UserType>();
             UnverifiedEmails = new Repository<UnverifiedEmail>();
             ResetPasswordCommands = new Repository<ResetPasswordCommand>();
