@@ -7,6 +7,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Razor.Tokenizer.Symbols;
+using System.Web.Services.Description;
 
 namespace ChatManager.Controllers
 {
@@ -65,8 +66,38 @@ namespace ChatManager.Controllers
 
             var currentUserMessages = DB.Users.GetUsersChats(userId, friendId);
             var friendMessages = DB.Users.GetUsersChats(friendId, userId);
-            
+
             return PartialView((currentUserMessages, friendMessages));
+        }
+        [HttpPost]
+        public ActionResult SendMessage(string message)
+        {
+            int friendId = (int)Session["currentChatTarget"];
+            int userId = OnlineUsers.GetSessionUser().Id;
+
+            if (string.IsNullOrWhiteSpace(message) || DB.Users.Get(friendId) == null)
+            {
+                return Json(new { success = false, error = "Message invalide ou ami inexistant" });
+            }
+
+            try
+            {
+                UserChats newMessage = new UserChats
+                {
+                    UserId = userId,
+                    FriendId = friendId,
+                    Message = message,
+                    Date = DateTime.Now
+                };
+                //DB.UserChats.Add(newMessage);
+                DB.UserChats.Add(newMessage);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = "Une erreur s'est produite lors de l'envoi du message" });
+            }
         }
     }
 }

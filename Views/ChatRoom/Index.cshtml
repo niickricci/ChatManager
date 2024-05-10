@@ -26,6 +26,7 @@
                     </div>
                     <!-------------------------------------------->
                 </div>
+
             </div>
             @*Send messages container/input*@
             @*Note: Show only when friend is selected*@
@@ -78,32 +79,33 @@
                     }
                 });
             }
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Message sender handling
-            //function sendMessage() {
-            //    var message = $('#message').val();
-            //    $('#message').val("");
-            //    if (message != "") {
-            //        messagesPanelUpdater.command("/Chat/Send?message=" + message, UpdateMessagesPanelUIEventCallbacks);
-            //    }
-            //}
-            //$('#message').keypress(function (event) {
-            //    var keycode = (event.keyCode ? event.keyCode : event.which);
-            //    if (keycode == '13') {
-            //        sendMessage();
-            //    }
-            //});
+            function sendMessage() {
+                var message = $('#message').val();
+                $('#message').val("");
+                if (message != "") {
+                    messagesPanelUpdater.send("@Url.Action("SendMessage")" + "?message=" + message, UpdateMessagesPanelUIEventCallbacks);
+                }
+            }
+            $('#message').keypress(function (event) {
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode == '13') {
+                    sendMessage();
+                }
+            });
             //$('#message').focus(function (event) {
             //    ajaxActionCall("/chat/IsTyping");
             //});
             //$('#message').blur(function (event) {
             //    ajaxActionCall("/chat/StopTyping");
             //});
-            //$(document).on('keyup', function (event) {
-            //    if (event.key == "Escape") {
-            //        $("#message").val("");
-            //    }
-            //});
+            $(document).on('keyup', function (event) {
+                if (event.key == "Escape") {
+                    $("#message").val("");
+                }
+            });
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -188,56 +190,55 @@
             //        $("#typing").hide();
             //}
 
-            //$("#send").click(function () {
-            //    sendMessage();
-            //})
+            $("#send").click(function () {
+                sendMessage();
+            })
         })
 </script>
 
-
     @*<script>
-        $(function () {
-            let NotificationsDisabled = false; //On/Off
-            if (!NotificationsDisabled) {
-                setInterval(() => {
-                    $.ajax({
-                        url: "/Accounts/UserHasNotifications",
-                        dataType: "text",
-                        success: (hasNotifications) => {
-                            console.log("Has notification : ", JSON.parse(hasNotifications))
-                            if (JSON.parse(hasNotifications))
-                                $("#NotificationsIcon").addClass("blink");
-                            else
-                                $("#NotificationsIcon").removeClass("blink");
-                        }
-                    })
-                }, 2 * 1000)
-            }
-            $("#NotificationsIcon").click(function () {
+            $(function () {
+                let NotificationsDisabled = false; //On/Off
                 if (!NotificationsDisabled) {
-                    $.ajax({
-                        url: "/Accounts/GetUserNotifications",
-                        dataType: "text",
-                        success: (notifications) => {
-                            notifications = JSON.parse(notifications);
-                            console.log("Messages: ", notifications);
-                            if (notifications.length > 0) {
-                                let messages = "";
-                                notifications.forEach(message => {
-                                    messages += message + "<br>";
-                                })
-                                bootbox.alert(messages);
+                    setInterval(() => {
+                        $.ajax({
+                            url: "/Accounts/UserHasNotifications",
+                            dataType: "text",
+                            success: (hasNotifications) => {
+                                console.log("Has notification : ", JSON.parse(hasNotifications))
+                                if (JSON.parse(hasNotifications))
+                                    $("#NotificationsIcon").addClass("blink");
+                                else
+                                    $("#NotificationsIcon").removeClass("blink");
                             }
-                            else
-                                bootbox.alert("Aucune notification");
-                            $("#NotificationsIcon").removeClass("blink");
-                        }
-                    })
-                } else {
-                    bootbox.alert("Notifications désactivées");
+                        })
+                    }, 2 * 1000)
                 }
+                $("#NotificationsIcon").click(function () {
+                    if (!NotificationsDisabled) {
+                        $.ajax({
+                            url: "/Accounts/GetUserNotifications",
+                            dataType: "text",
+                            success: (notifications) => {
+                                notifications = JSON.parse(notifications);
+                                console.log("Messages: ", notifications);
+                                if (notifications.length > 0) {
+                                    let messages = "";
+                                    notifications.forEach(message => {
+                                        messages += message + "<br>";
+                                    })
+                                    bootbox.alert(messages);
+                                }
+                                else
+                                    bootbox.alert("Aucune notification");
+                                $("#NotificationsIcon").removeClass("blink");
+                            }
+                        })
+                    } else {
+                        bootbox.alert("Notifications désactivées");
+                    }
+                })
             })
-        })
 
-    </script>*@
+        </script>*@
 }

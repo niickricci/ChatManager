@@ -1,7 +1,18 @@
 ﻿@model (IEnumerable<UserChats>, IEnumerable<UserChats>)
 @{
+    var frenchDates = new System.Globalization.CultureInfo("fr-FR");
     var currentUserMessages = Model.Item1;
-    var friendMessages = Model.Item1;
+    var friendMessages = Model.Item2;
+    IEnumerable<UserChats> liste = new List<UserChats>();
+    if (currentUserMessages != null)
+    {
+        liste = liste.Concat(currentUserMessages).ToList();
+    }
+    if (friendMessages != null)
+    {
+        liste = liste.Concat(friendMessages).ToList();
+    }
+
     ChatManager.Models.User friend = ChatManager.Models.DB.Users.Get((int)Session["currentChatTarget"]);
     bool isOnline = ChatManager.Models.OnlineUsers.IsOnLine(friend.Id);
 }
@@ -10,17 +21,96 @@
 @*Each Friends*@
 @if (currentUserMessages != null || friendMessages != null)
 {
-    foreach (var msg in currentUserMessages)
-    {
-        <div class="messagesHeader">
-            @if (friend != null)
+    <div class="messagesHeader">
+        @if (friend != null)
+        {
+            <h4>Conversation avec </h4>
+            <div style="display: flex; align-items: center; gap:10px">
+                @Helper.AvatarUserChat(friend, "UserMediumAvatar")
+            </div>
+        }
+    </div>
+    @*if (currentUserMessages != null)
+        {
+            foreach (var msg in currentUserMessages)
             {
-                <h4>Conversation avec </h4>
-                <div style="display: flex; align-items: center; gap:10px">
-                    @Helper.AvatarUserChat(friend, "UserMediumAvatar")
+                <div class="sentLayout">
+                    <div class="sent" title="@msg.Date.TimeOfDay.ToString()">
+                        <span class="token">@msg.Message.ToString()</span>
+                    </div>
                 </div>
             }
+        }
+        if (friendMessages != null)
+        {
+            foreach (var msg in friendMessages)
+            {
+
+                <div class="receivedLayout">
+                    <div class="received" title="@msg.Date.TimeOfDay.ToString()">
+                        <span class="token">@msg.Message.ToString()</span>
+                    </div>
+                </div>
+            }
+        }*@
+
+    if (liste != null)
+    {
+        var dateCounter = liste.First().Date;
+        <div class="messageTime">
+            @dateCounter.ToString("d MMMM yyyy - HH:mm", frenchDates)
         </div>
+
+        foreach (var msg in liste.OrderBy(l => l.Date.Date).ThenBy(k => k.Date.TimeOfDay))
+        {
+
+            @*if (!msg.Date.Date.Equals(dateCounter.Date))
+                {
+                    <div class="messageTime">
+                        @msg.Date.ToString();
+                    </div>
+                    dateCounter = msg.Date.Date;
+                }*@
+            if (msg.Date.Date != dateCounter.Date)
+            {
+                <div class="messageTime">
+                    @msg.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)
+                </div>
+                dateCounter = msg.Date;
+            }
+            else if (msg.Date.Date == dateCounter.Date && msg.Date.Hour > dateCounter.Hour)
+            {
+                <div class="messageTime">
+                    @msg.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)
+                </div>
+                dateCounter = msg.Date.Date;
+            }
+            else if (msg.Date.Date == dateCounter.Date && msg.Date.Hour == dateCounter.Hour && msg.Date.Minute >= dateCounter.Minute + 30)
+            {
+                <div class="messageTime">
+                    @msg.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)
+                </div>
+                dateCounter = msg.Date.Date;
+            }
+
+
+            if (msg.UserId != friend.Id)
+            {
+                <div class="sentLayout">
+                    <div class="sent" title="@msg.Date.ToString("HH:mm", frenchDates)">
+                        <span class="token">@msg.Message.ToString()</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="receivedLayout">
+                    <div class="received" title="@msg.Date.ToString("HH:mm", frenchDates)">
+                        <span class="token">@msg.Message.ToString()</span>
+                    </div>
+                </div>
+            }
+        }
     }
 }
 else

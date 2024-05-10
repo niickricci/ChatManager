@@ -94,6 +94,7 @@ body {
     transform: translate(-30px, 3px);
     cursor: pointer;
 }
+
 .icon {
     font-size: 25px !important;
     cursor: pointer;
@@ -354,6 +355,7 @@ input[type=checkbox] {
     overflow: scroll;
     padding: 5px;
 }
+
 .unselectedTarget {
     border: 4px solid #fff;
     height: 55.5px;
@@ -363,6 +365,7 @@ input[type=checkbox] {
     padding: 4px;
     border-radius: 50px;
 }
+
     .unselectedTarget:hover {
         background-color: #6dbafc;
         cursor: pointer;
@@ -396,6 +399,7 @@ input[type=checkbox] {
     padding: 10px;
     align-items: center;
 }
+
 .loginContainer {
     display: grid;
     grid-template-columns: 180px auto;
@@ -406,4 +410,64 @@ input[type=checkbox] {
 #LoginsJournalContainer {
     margin: auto;
     max-width: 515px;
+}
+
+.receivedLayout {
+    display: flex;
+    justify-content: flex-start;
+}
+
+@media screen and (max-width: 800px) {
+    .received {
+        max-width: 400px;
+    }
+}
+
+.received {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    max-width: 600px;
+    background-color: #3b67b1;
+    color: #e8f0fe;
+}
+
+.sentLayout {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 800px) {
+    .sent {
+        max-width: 400px;
+    }
+}
+
+.sent {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    max-width: 600px;
+    background-color: #f8cd53;
+    color: #000;
+    word-wrap: anywhere;
+    overflow-x: scroll;
+}
+
+.token {
+    max-width: 150px !important;
+    overflow: hidden !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: scroll;
+}
+
+.messageTime {
+    border-bottom: 1px solid #ccc;
+    margin: 5px;
+    text-align: center;
+    font-size: .75em;
+    font-family: monospace;
+    color: #ccc;
 }
