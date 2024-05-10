@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Views/Accounts/Login.cshtml
+App_Data/UserChats.json
