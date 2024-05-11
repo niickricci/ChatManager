@@ -109,60 +109,60 @@
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-            //let editor = null;
-            //let targetedMessageContainer = null;
+            let editor = null;
+            let targetedMessageContainer = null;
 
-            //function deleteMessageEditor() {
-            //    if (editor != null) {
-            //        editor.remove();
-            //        messagesPanelUpdater.restart();
-            //        editor = null;
-            //    }
-            //    if (targetedMessageContainer != null)
-            //        targetedMessageContainer.show();
-            //}
-            //$(document).click(function () { deleteMessageEditor(); })
+            function deleteMessageEditor() {
+                if (editor != null) {
+                    editor.remove();
+                    messagesPanelUpdater.restart();
+                    editor = null;
+                }
+                if (targetedMessageContainer != null)
+                    targetedMessageContainer.show();
+            }
+            $(document).click(function () { deleteMessageEditor(); })
 
-            //function createMessageEditor(messageId) {
-            //    deleteMessageEditor();
-            //    messagesPanelUpdater.pause();
-            //    targetedMessageContainer = $(`#sent_${messageId}`);
+            function createMessageEditor(messageId) {
+                deleteMessageEditor();
+                messagesPanelUpdater.pause();
+                targetedMessageContainer = $(`#sent_${messageId}`);
 
-            //    messagesPanelUpdater.command(`/Chat/GetMessage?id=${messageId}`, function (messageText) {
-            //        targetedMessageContainer.hide();
-            //        let input = $(`<textarea>${messageText.trim()}</textarea>"`);
-            //        let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
-            //        let deleteCmd = $(`<span class="icon smallerIcon fa fa-trash" title="Effacer ce message"></span>`);
-            //        editor = $(`<div class="messageEditorContainer" id="messageEditor" >`);
-            //        editor.append(input, acceptCmd, deleteCmd);
-            //        editor.insertAfter(targetedMessageContainer);
-            //        input.height(input[0].scrollHeight - 20);
-            //        input.focus();
-            //        input.val(input.val() + ' ');
-            //        input.keyup(function (event) {
-            //            if (event.key == "Escape") {
-            //                targetedMessageContainer.show();
-            //                deleteMessageEditor();
-            //                messagesPanelUpdater.restart();
-            //            }
-            //        })
-            //        input.click(function (event) {
-            //            event.stopPropagation()
-            //        })
-            //        acceptCmd.click(function () {
-            //            messagesPanelUpdater.command(`/Chat/UpdateMessage?id=${messageId}&message=${input.val()}`);
-            //            messagesPanelUpdater.restart();
-            //        })
-            //        deleteCmd.click(function () {
-            //            bootbox.confirm("Effacer ce message?", function (result) {
-            //                if (result) {
-            //                    messagesPanelUpdater.command(`/Chat/DeleteMessage?id=${messageId}`);
-            //                    messagesPanelUpdater.restart();
-            //                }
-            //            })
-            //        })
-            //    })
-            //}
+                messagesPanelUpdater.command(`/Chat/GetMessage?id=${messageId}`, function (messageText) {
+                    targetedMessageContainer.hide();
+                    let input = $(`<textarea>${messageText.trim()}</textarea>"`);
+                    let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
+                    let deleteCmd = $(`<span class="icon smallerIcon fa fa-trash" title="Effacer ce message"></span>`);
+                    editor = $(`<div class="messageEditorContainer" id="messageEditor" >`);
+                    editor.append(input, acceptCmd, deleteCmd);
+                    editor.insertAfter(targetedMessageContainer);
+                    input.height(input[0].scrollHeight - 20);
+                    input.focus();
+                    input.val(input.val() + ' ');
+                    input.keyup(function (event) {
+                        if (event.key == "Escape") {
+                            targetedMessageContainer.show();
+                            deleteMessageEditor();
+                            messagesPanelUpdater.restart();
+                        }
+                    })
+                    input.click(function (event) {
+                        event.stopPropagation()
+                    })
+                    acceptCmd.click(function () {
+                        messagesPanelUpdater.command(`/Chat/UpdateMessage?id=${messageId}&message=${input.val()}`);
+                        messagesPanelUpdater.restart();
+                    })
+                    deleteCmd.click(function () {
+                        bootbox.confirm("Effacer ce message?", function (result) {
+                            if (result) {
+                                messagesPanelUpdater.command(`/Chat/DeleteMessage?id=${messageId}`);
+                                messagesPanelUpdater.restart();
+                            }
+                        })
+                    })
+                })
+            }
 
             function UpdateMessagesPanelUIEventCallbacks() {
                 $("#typing").hide();

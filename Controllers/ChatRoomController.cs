@@ -99,5 +99,34 @@ namespace ChatManager.Controllers
                 return Json(new { success = false, error = "Une erreur s'est produite lors de l'envoi du message" });
             }
         }
+
+        public ActionResult UpdateMessage(int messageId, string message)
+        {
+            int userId = OnlineUsers.GetSessionUser().Id;
+            int friendId = (int)Session["currentChatTarget"];
+            //var nouveauMEssage = DB.UserChats.Get(messageId);
+
+            try
+            {
+                var applicantMessage = DB.Users.GetUserChatsByChatId(userId, messageId);
+                UserChats newMessage = new UserChats
+                {
+                    Id = messageId,
+                    UserId = userId,
+                    FriendId = friendId,
+                    Message = message,
+                    Date = DateTime.Now
+                };
+                DB.UserChats.Update(newMessage);
+                return Json(new { success = true });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = "Une erreur s'est produite lors de la modification du nessage" });
+
+            }
+
+        }
     }
 }
