@@ -23,7 +23,7 @@
 {
     if (friendMessages != null)
     {
-        foreach(var m in friendMessages)
+        foreach (var m in friendMessages)
         {
             m.IsRead = true;
             ChatManager.Models.DB.UserChats.Update(m);
@@ -106,7 +106,8 @@
             {
                 <div class="sentLayout">
                     <div class="sent" id="sent_@msg.Id" title="@msg.Date.ToString("HH:mm", frenchDates)">
-                        <span class="token">@msg.Message.ToString()</span>
+                        @*<span class="token">@msg.Message.ToString()</span>*@
+                        @Helper.ParseContent(msg.Message)
                         @if (msg.isModified)
                         {
                             <span class="token_modified">(Modifié)</span>
@@ -118,13 +119,18 @@
                             </span><span class="icon smallerIcon fa fa-trash" title="Effacer ce message">
                             </span>
                         </div>*@
+                    @if (!@msg.IsRead)
+                    {
+                        <div class="unreadIndicator" title="Message non lu"></div>
+                    }
                 </div>
             }
             else
             {
                 <div class="receivedLayout">
                     <div class="received" title="@msg.Date.ToString("HH:mm", frenchDates)">
-                        <span class="token">@msg.Message.ToString()</span>
+                        @*<span class="token">@msg.Message.ToString()</span>*@
+                        @Helper.ParseContent(msg.Message)
                         @if (msg.isModified)
                         {
                             <span class="token_modified">(Modifié)</span>
@@ -134,6 +140,13 @@
             }
 
         }
+        //if (ChatManager.Models.DB.Users.GetFriendShip((int)Session["currentChatTarget"], ChatManager.Models.OnlineUsers.GetSessionUser().Id).isTyping)
+        //{
+        <div class="receivedLayout" id="typing" style="">
+            <img src="/Content/UI-icons/typing1.gif" style="width:40px; border-radius:8px" class="received">
+        </div>
+        //}
+        <div style="height:40px;">&nbsp;</div>
     }
 }
 else

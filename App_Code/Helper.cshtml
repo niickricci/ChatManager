@@ -27,7 +27,7 @@
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     <a href="@Url.Action(action,controller)" style="text-decoration:none">
-        <div id="@id"class="icon fa @icon_class"
+        <div id="@id" class="icon fa @icon_class"
              title="@TooltipMessage"
              data-placement="@ToolTipPlacement">
         </div>
@@ -267,7 +267,11 @@
                         string youtubeThumbnail = "https://i3.ytimg.com/vi/" + youtubeId + "/maxresdefault.jpg";
                         <br />
                         <a href="@token" target="_blank">
-                            <img class="contentImage" src="@youtubeThumbnail" alt="" />
+                            @*<img class="contentImage" src="@youtubeThumbnail" alt="" />*@
+                            <div class="iframe-container">
+                                <iframe class="responsive-iframe" src="https://www.youtube.com/embed/@youtubeId">
+                                </iframe>
+                            </div>
                         </a>
                         <br />
                     }

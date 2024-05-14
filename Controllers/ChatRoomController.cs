@@ -50,26 +50,30 @@ namespace ChatManager.Controllers
 
         public ActionResult GetChatRoom(bool forceRefresh = false)
         {
-            if (Session["currentChatTarget"] == null)
+            if (forceRefresh)
             {
-                return null;
+                if (Session["currentChatTarget"] == null)
+                {
+                    return null;
+                }
+
+                int userId = OnlineUsers.GetSessionUser().Id;
+                int friendId = (int)Session["currentChatTarget"];
+                //User friend = DB.Users.Get(friendId);
+
+                if (DB.Users.Get(userId) == null)
+                {
+                    return null;
+                }
+
+
+                var currentUserMessages = DB.Users.GetUsersChats(userId, friendId);
+                var friendMessages = DB.Users.GetUsersChats(friendId, userId);
+
+
+                return PartialView((currentUserMessages, friendMessages));
             }
-
-            int userId = OnlineUsers.GetSessionUser().Id;
-            int friendId = (int)Session["currentChatTarget"];
-            //User friend = DB.Users.Get(friendId);
-
-            if (DB.Users.Get(userId) == null)
-            {
-                return null;
-            }
-
-
-            var currentUserMessages = DB.Users.GetUsersChats(userId, friendId);
-            var friendMessages = DB.Users.GetUsersChats(friendId, userId);
-
-
-            return PartialView((currentUserMessages, friendMessages));
+            return null;
         }
         [HttpPost]
         public ActionResult SendMessage(string message)
@@ -207,9 +211,54 @@ namespace ChatManager.Controllers
             return View();
         }
         [OnlineUsers.AdminAccess]
-        public ActionResult GetChatLogs() {
-            var chats = DB.UserChats.ToList().OrderByDescending(c=>c.Date).ThenBy(c=>c.Date.TimeOfDay);
-            return PartialView(chats);
+        public ActionResult GetChatLogs(bool forceRefresh = false)
+        {
+            if (forceRefresh)
+            {
+                var chats = DB.UserChats.ToList().OrderByDescending(c => c.Date).ThenBy(c => c.Date.TimeOfDay);
+                return PartialView(chats);
+            }
+            return null;
+        }
+
+        public JsonResult IsTyping()
+        {
+            int friendId = (int)Session["currentChatTarget"];
+            int userId = OnlineUsers.GetSessionUser().Id;
+            var friendship = DB.Users.GetFriendShip(userId, friendId);
+            if (friendship != null && friendship.IsFriend && !friendship.isTyping)
+            {
+                friendship.isTyping = true;
+                DB.UserFriendships.Update(friendship);
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult StopTyping()
+        {
+            int friendId = (int)Session["currentChatTarget"];
+            int userId = OnlineUsers.GetSessionUser().Id;
+            var friendship = DB.Users.GetFriendShip(userId, friendId);
+            if (friendship != null && friendship.IsFriend && friendship.isTyping)
+            {
+                friendship.isTyping = false;
+                DB.UserFriendships.Update(friendship);
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult IsTargetTyping()
+        {
+            int friendId = (int)Session["currentChatTarget"];
+            int userId = OnlineUsers.GetSessionUser().Id;
+            var friendship = DB.Users.GetFriendShip(friendId, userId);
+            if (friendship != null && friendship.IsFriend && friendship.isTyping)
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
         }
     }
 }

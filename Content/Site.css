@@ -256,6 +256,10 @@ fieldset {
     font-weight: bold;
 }
 
+.formLayoutLogs {
+    margin: auto;
+    max-width: 800px;
+}
 .formLayout {
     margin: auto;
     max-width: 415px;
@@ -509,6 +513,8 @@ input[type=checkbox] {
     gap: 20px;
     align-items: center;
     height: 50px;
+    height:auto;
+    width: 100%;
 }
 
 .blink{
@@ -518,5 +524,26 @@ input[type=checkbox] {
 @keyframes blinker {
     50% {
         opacity: 0.25;
+    }
+}
+.contentImage{
+   max-width: 520px;
+   max-height: 315px;
+   width: 100%;
+   border: 2px solid black;
+}
+
+.iframe-container {
+    max-width: 720px;
+    width: auto;
+}
+.responsive-iframe {
+    width: 500px;
+    height: 315px;
+}
+@media only screen and (max-width: 780px) {
+    .responsive-iframe {
+        width: 280px;
+        height: 169px;
     }
 }

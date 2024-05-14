@@ -9,4 +9,5 @@ public class UserFriendships
     public bool IsFriend { get; set; }
     public bool isPending { get; set; }
     public bool isDeclined { get; set; }
+    public bool isTyping { get; set; }
 }

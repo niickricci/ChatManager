@@ -27,7 +27,8 @@
         <div id="delete_@chat.Id" class="DELETE_MESSAGE icon blue fa fa-times-circle" title="Effacer le message de @sender.GetFullName()"></div>
         <!--Message-->
         <div class="sent" style="cursor: default" title="@chat.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)">
-            <span class="token">@chat.Message.ToString()</span>
+            @*<span class="token">@chat.Message.ToString()</span>*@
+            @Helper.ParseContent(chat.Message)
         </div>
     </div>
     @*}*@

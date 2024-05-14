@@ -61,7 +61,7 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-    <script>
+<script>
         $(function () {
             //initTimeout(120);
             let friendsPanelUpdater = new PartialRefresh("@Url.Action("GetFriendsList")", "friendsListContainer", 5, UpdateFriendsListUIEventCallbacks);
@@ -106,12 +106,12 @@
                     sendMessage();
                 }
             });
-            //$('#message').focus(function (event) {
-            //    ajaxActionCall("/chat/IsTyping");
-            //});
-            //$('#message').blur(function (event) {
-            //    ajaxActionCall("/chat/StopTyping");
-            //});
+            $('#message').focus(function (event) {
+                ajaxActionCall("@Url.Action("IsTyping")");
+            });
+            $('#message').blur(function (event) {
+                ajaxActionCall("@Url.Action("StopTyping")");
+            });
             $(document).on('keyup', function (event) {
                 if (event.key == "Escape") {
                     $("#message").val("");
@@ -193,18 +193,18 @@
                 });
             }
 
-            //setInterval(() => { ajaxActionCall("/Chat/IsTargetTyping", UpdateTyping); }, 3000);
+            setInterval(() => { ajaxActionCall("@Url.Action("IsTargetTyping")", UpdateTyping); }, 3000);
 
-            //function UpdateTyping(show) {
-            //    if (show)
-            //        $("#typing").show();
-            //    else
-            //        $("#typing").hide();
-            //}
+            function UpdateTyping(show) {
+                if (show)
+                    $("#typing").show();
+                else
+                    $("#typing").hide();
+            }
 
             $("#send").click(function () {
                 sendMessage();
             })
         })
-    </script>
+</script>
 }
