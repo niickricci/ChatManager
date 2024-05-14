@@ -87,7 +87,8 @@ namespace ChatManager.Controllers
                     UserId = userId,
                     FriendId = friendId,
                     Message = message,
-                    Date = DateTime.Now
+                    Date = DateTime.Now,
+                    isModified = false
                 };
                 //DB.UserChats.Add(newMessage);
                 DB.UserChats.Add(newMessage);
@@ -103,22 +104,48 @@ namespace ChatManager.Controllers
         public ActionResult UpdateMessage(int messageId, string message)
         {
             int userId = OnlineUsers.GetSessionUser().Id;
-            int friendId = (int)Session["currentChatTarget"];
-            //var nouveauMEssage = DB.UserChats.Get(messageId);
+            try
+            {
+                var m = DB.UserChats.Get(messageId);
+                if (m != null && m.UserId == userId)
+                {
+
+                    m.Message = message;
+                    m.isModified = true;
+
+
+                    DB.UserChats.Update(m);
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = "Une erreur s'est produite lors de la modification du nessage" });
+
+            }
+
+        }
+        public ActionResult DeleteMessage(int messageId)
+        {
+            int userId = OnlineUsers.GetSessionUser().Id;
 
             try
             {
-                var applicantMessage = DB.Users.GetUserChatsByChatId(userId, messageId);
-                UserChats newMessage = new UserChats
+                var m = DB.UserChats.Get(messageId);
+                if (m != null && m.UserId == userId)
                 {
-                    Id = messageId,
-                    UserId = userId,
-                    FriendId = friendId,
-                    Message = message,
-                    Date = DateTime.Now
-                };
-                DB.UserChats.Update(newMessage);
-                return Json(new { success = true });
+                    DB.UserChats.Delete(messageId);
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
 
             }
             catch (Exception ex)
