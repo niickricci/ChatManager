@@ -290,6 +290,8 @@
     <Content Include="Views\FriendShips\GetFriendList.cshtml" />
     <Content Include="Views\ChatRoom\GetFriendsList.cshtml" />
     <Content Include="Views\ChatRoom\GetChatRoom.cshtml" />
+    <Content Include="Views\Accounts\Edit.cshtml" />
+    <Content Include="Views\Accounts\EditForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Notifications\" />

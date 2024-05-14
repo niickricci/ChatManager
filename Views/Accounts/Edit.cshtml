@@ -1,0 +1,21 @@
+﻿@model ChatManager.Models.User
+
+<h2>@Model.GetFullName()</h2>
+<hr />
+
+<div class="main">
+    @{
+        ViewBag.Title = "Edit";
+        Html.RenderPartial("EditForm");
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+            initTimeout(300);
+        })
+    </script>
+}

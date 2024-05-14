@@ -6,8 +6,17 @@
 {
     if (user.Id != ChatManager.Models.OnlineUsers.GetSessionUser().Id)
     {
-        <div class="unselectedTarget" userid="@user.Id">
-            @Helper.AvatarUserWithoutName(user, "UserSmallAvatar")
-        </div>
+        if (Convert.ToInt32(Session["currentChatTarget"]) != user.Id)
+        {
+            <div class="unselectedTarget" userid="@user.Id">
+                @Helper.AvatarUserWithoutName(user, "UserSmallAvatar")
+            </div>
+        }
+        else
+        {
+            <div class="selectedTarget" userid="@user.Id">
+                @Helper.AvatarUserWithoutName(user, "UserSmallAvatar")
+            </div>
+        }
     }
 }

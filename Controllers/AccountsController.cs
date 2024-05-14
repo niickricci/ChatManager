@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.WebPages.Html;
 using ChatManager.Models;
 using Mail;
 
@@ -15,8 +16,12 @@ namespace ChatManager.Controllers
         [HttpPost]
         public JsonResult EmailAvailable(string email)
         {
+           
             User user = OnlineUsers.GetSessionUser();
             int excludedId = user != null ? user.Id : 0;
+            if(Session["editTarget"] != null){
+                excludedId = Convert.ToInt32(Session["editTarget"]);
+            }
             return Json(DB.Users.EmailAvailable(email, excludedId));
         }
 
@@ -384,7 +389,7 @@ namespace ChatManager.Controllers
             OnlineUsers.RemoveSessionUser();
             return RedirectToAction("Login");
         }
-        
+
         [OnlineUsers.AdminAccess]
         public ActionResult LoginsJournal()
         {
@@ -531,5 +536,51 @@ namespace ChatManager.Controllers
 
         }
         #endregion
+        public ActionResult Edit(int id)
+        {
+            var user = DB.Users.FindUser(id);
+
+            if (user != null)
+            {
+                Session["editTarget"] = id;
+                ViewBag.UserTypes = new SelectList(DB.UserTypes.ToList(), "Id", "Name", user.UserTypeId);
+                Session["LastAction"] = "https://localhost:44318/Friendships/FriendsList";
+                return View(user);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken()]
+        public ActionResult Edit(User user)
+        {
+            var oldUser = DB.Users.FindUser(user.Id);
+            oldUser.Id = user.Id;
+            oldUser.Verified = user.Verified;
+            oldUser.UserTypeId = user.UserTypeId;
+            oldUser.Blocked = user.Blocked;
+            oldUser.CreationDate = user.CreationDate;
+
+            string newEmail = "";
+                if (oldUser.Email != user.Email)
+                {
+                    newEmail = user.Email;
+                    oldUser.Email = oldUser.ConfirmEmail = user.Email;
+                }
+
+                if (DB.Users.Update(oldUser))
+                {
+                    if (newEmail != "")
+                    {
+                        SendEmailChangedVerification(oldUser, newEmail);
+                        return Redirect((string)Session["LastAction"]);
+                    }
+                    else
+                        return Redirect((string)Session["LastAction"]);
+                }
+            
+            ViewBag.UserTypes = new SelectList(DB.UserTypes.ToList(), "Id", "Name", user.UserTypeId);
+            return View(user);
+        }
     }
 }

@@ -44,6 +44,18 @@ class PartialRefresh {
         $.ajax({
             url: url,
             method: 'GET',
+            success: (messageText) => {
+                this.refresh(true);
+                if (moreCallBack != null)
+                    moreCallBack(messageText);
+            }
+        });
+    }
+
+    delete(url, moreCallBack = null) {
+        $.ajax({
+            url: url,
+            method: 'POST',
             success: () => {
                 this.refresh(true);
                 if (moreCallBack != null)
@@ -53,6 +65,18 @@ class PartialRefresh {
     }
 
     send(url, moreCallBack = null) {
+        $.ajax({
+            url: url,
+            method: 'POST',
+            success: () => {
+                this.refresh(true);
+                if (moreCallBack != null)
+                    moreCallBack();
+            }
+        });
+    }
+
+    edit(url, moreCallBack = null) {
         $.ajax({
             url: url,
             method: 'POST',

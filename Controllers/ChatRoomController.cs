@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Configuration;
 using System.Runtime.Remoting.Messaging;
 using System.Web;
 using System.Web.Mvc;
@@ -87,7 +88,8 @@ namespace ChatManager.Controllers
                     UserId = userId,
                     FriendId = friendId,
                     Message = message,
-                    Date = DateTime.Now
+                    Date = DateTime.Now,
+                    isModified = false
                 };
                 //DB.UserChats.Add(newMessage);
                 DB.UserChats.Add(newMessage);
@@ -98,6 +100,80 @@ namespace ChatManager.Controllers
             {
                 return Json(new { success = false, error = "Une erreur s'est produite lors de l'envoi du message" });
             }
+        }
+
+        public ActionResult UpdateMessage(int messageId, string message)
+        {
+            int userId = OnlineUsers.GetSessionUser().Id;
+            try
+            {
+                var m = DB.UserChats.Get(messageId);
+                if (m != null && m.UserId == userId)
+                {
+
+                    m.Message = message;
+                    m.isModified = true;
+
+
+                    DB.UserChats.Update(m);
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = "Une erreur s'est produite lors de la modification du nessage" });
+
+            }
+
+        }
+        public ActionResult DeleteMessage(int messageId)
+        {
+            int userId = OnlineUsers.GetSessionUser().Id;
+
+            try
+            {
+                var m = DB.UserChats.Get(messageId);
+                if (m != null && m.UserId == userId)
+                {
+                    DB.UserChats.Delete(messageId);
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = "Une erreur s'est produite lors de la modification du nessage" });
+
+            }
+
+        }
+
+        public JsonResult GetMessage(int messageId)
+        {
+            int userId = OnlineUsers.GetSessionUser().Id;
+
+
+            var m = DB.UserChats.Get(messageId);
+            if (m != null && m.UserId == userId)
+            {
+                var message = m.Message;
+                return Json(message, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false });
+            }
+
+
         }
     }
 }
