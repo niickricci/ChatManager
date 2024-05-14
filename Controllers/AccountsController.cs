@@ -536,6 +536,7 @@ namespace ChatManager.Controllers
 
         }
         #endregion
+        [OnlineUsers.AdminAccess]
         public ActionResult Edit(int id)
         {
             var user = DB.Users.FindUser(id);
@@ -552,6 +553,7 @@ namespace ChatManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken()]
+        [OnlineUsers.AdminAccess]
         public ActionResult Edit(User user)
         {
             var oldUser = DB.Users.FindUser(user.Id);
