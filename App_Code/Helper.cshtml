@@ -23,6 +23,16 @@
         </div>
     </a>
 }
+@helper IconCmdWithId(string controller, string action, string icon_class, string TooltipMessage, string id, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <a href="@Url.Action(action,controller)" style="text-decoration:none">
+        <div id="@id"class="icon fa @icon_class"
+             title="@TooltipMessage"
+             data-placement="@ToolTipPlacement">
+        </div>
+    </a>
+}
 @helper IconConfirmCmd(string controller, string Action, string icon_class, string TooltipMessage, string ToolTipPlacement = "bottom")
 {
     //// http://bootboxjs.com/documentation.html#bb-confirm

@@ -21,6 +21,14 @@
 @*Each Friends*@
 @if (currentUserMessages != null || friendMessages != null)
 {
+    if (friendMessages != null)
+    {
+        foreach(var m in friendMessages)
+        {
+            m.IsRead = true;
+            ChatManager.Models.DB.UserChats.Update(m);
+        }
+    }
     <div class="messagesHeader">
         @if (friend != null)
         {

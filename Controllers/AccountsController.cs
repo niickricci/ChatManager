@@ -584,5 +584,35 @@ namespace ChatManager.Controllers
             ViewBag.UserTypes = new SelectList(DB.UserTypes.ToList(), "Id", "Name", user.UserTypeId);
             return View(user);
         }
+
+        public JsonResult UserHasNotifications()
+        {
+            var messages = DB.UserChats.ToList().Where(m=>m.FriendId == OnlineUsers.GetSessionUser().Id);
+            if (messages.Any(m => m.IsRead == false))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            //if (!OnlineUsers.GetSessionUser().HasNotification) { 
+            //    return Json(true, JsonRequestBehavior.AllowGet); 
+            //} 
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetUserNotifications()
+        {
+            var frenchDates = new System.Globalization.CultureInfo("fr-FR");
+            var messages = DB.UserChats.ToList().Where(m => m.FriendId == OnlineUsers.GetSessionUser().Id);
+            var msgNotRead = messages.Where(m => m.IsRead == false);
+            msgNotRead = msgNotRead.OrderByDescending(m => m.Date).ThenBy(m => m.Date.TimeOfDay);
+            List<string> listMsg = new List<string> { };
+
+            foreach (var msg in msgNotRead)
+            {
+                listMsg.Add($"[ {msg.Date.ToString("d/MM/yy - HH:mm", frenchDates)} ] Nouveau message de {DB.Users.FindUser(msg.UserId).GetFullName()}");
+                //listMsg.Add($"Nouveau message de {DB.Users.FindUser(msg.UserId).GetFullName()}{msg.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)} - {DB.Users.FindUser(msg.UserId).GetFullName()}: {msg.Message}");
+            }
+
+            return Json(listMsg, JsonRequestBehavior.AllowGet);
+        }
     }
 }

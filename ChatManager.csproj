@@ -295,9 +295,7 @@
     <Content Include="Views\ChatRoom\Logs.cshtml" />
     <Content Include="Views\ChatRoom\GetChatLogs.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Notifications\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

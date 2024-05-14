@@ -68,6 +68,7 @@ namespace ChatManager.Controllers
             var currentUserMessages = DB.Users.GetUsersChats(userId, friendId);
             var friendMessages = DB.Users.GetUsersChats(friendId, userId);
 
+
             return PartialView((currentUserMessages, friendMessages));
         }
         [HttpPost]

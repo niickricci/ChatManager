@@ -31,7 +31,11 @@
             </div>
             @if (currentUser != null)
             {
-                @Helper.IconCmd("Notification", "", "menu-Icon fa fa fa-bell", "Notifications")
+                <div id="NotificationsIcon" class="icon fa fa fa-bell"
+                     title="Notifications"
+                     data-placement="bottom">
+                </div>
+                @*@Helper.IconCmdWithId("Notification", "", "menu-Icon fa fa fa-bell", "Notifications", "NotificationsIcon")*@
                 @Helper.avatarLink(currentUser.Avatar, "/Accounts/Profil")
 
                 @Helper.IconCmd("Accounts", "Logout", "menu-Icon fa fa-sign-out", "Se déconnecter...")
@@ -49,13 +53,56 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
     @RenderSection("scripts", required: false)
+    <script>
+        $(function () {
+            let NotificationsDisabled = false; //On/Off
+            if (!NotificationsDisabled) {
+                setInterval(() => {
+                    $.ajax({
+                        url: "/Accounts/UserHasNotifications",
+                        dataType: "text",
+                        success: (hasNotifications) => {
+                            console.log("Has notification : ", JSON.parse(hasNotifications))
+                            if (JSON.parse(hasNotifications))
+                                $("#NotificationsIcon").addClass("blink");
+                            else
+                                $("#NotificationsIcon").removeClass("blink");
+                        }
+                    })
+                }, 2 * 1000)
+            }
+            $("#NotificationsIcon").click(function () {
+/*                bootbox.alert("Aucune notification");*/
+                if (!NotificationsDisabled) {
+                    $.ajax({
+                        url: "/Accounts/GetUserNotifications",
+                        dataType: "text",
+                        success: (notifications) => {
+                            notifications = JSON.parse(notifications);
+                            console.log("Messages: ", notifications);
+                            if (notifications.length > 0) {
+                                let messages = "";
+                                notifications.forEach(message => {
+                                    messages += message + "<br>";
+                                })
+                                bootbox.alert(messages);
+                            }
+                            else
+                                bootbox.alert("Aucune notification");
+                            $("#NotificationsIcon").removeClass("blink");
+                        }
+                    })
+                } else {
+                    bootbox.alert("Notifications désactivées");
+                }
+            })
+        })
+
+    </script>
+
 </body>
 </html>
 
 
-@*<span id="NotificationsIcon"
-      class="icon fa fa-bell"
-      title="Notifications"
-      data-placement="bottom">
-</span>*@

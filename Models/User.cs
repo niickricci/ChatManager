@@ -73,6 +73,9 @@ namespace ChatManager.Models
         [JsonIgnore]
         public bool IsAdmin { get { return UserTypeId == 1 /* Admin */; } }
 
+        [JsonIgnore]
+        public bool HasNotification { get; set; }
+
         public string GetFullName(bool showGender = false)
         {
             if (showGender)

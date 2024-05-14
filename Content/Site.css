@@ -510,3 +510,13 @@ input[type=checkbox] {
     align-items: center;
     height: 50px;
 }
+
+.blink{
+    animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0.25;
+    }
+}
