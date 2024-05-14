@@ -547,3 +547,12 @@ input[type=checkbox] {
         height: 169px;
     }
 }
+
+.unreadIndicator {
+    margin-top: 5px;
+    background-color: #3b67b1;
+    width: 8px;
+    min-width: 8px !important;
+    height: 8px;
+    border-radius: 8px;
+}

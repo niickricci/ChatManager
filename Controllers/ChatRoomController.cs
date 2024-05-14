@@ -50,7 +50,7 @@ namespace ChatManager.Controllers
 
         public ActionResult GetChatRoom(bool forceRefresh = false)
         {
-            if (forceRefresh)
+            if (forceRefresh || OnlineUsers.HasChanged() || DB.Users.HasChanged || DB.UserFriendships.HasChanged || DB.UserChats.HasChanged)
             {
                 if (Session["currentChatTarget"] == null)
                 {
@@ -94,7 +94,8 @@ namespace ChatManager.Controllers
                     FriendId = friendId,
                     Message = message,
                     Date = DateTime.Now,
-                    isModified = false
+                    isModified = false,
+                    IsRead = false,
                 };
                 //DB.UserChats.Add(newMessage);
                 DB.UserChats.Add(newMessage);
@@ -213,7 +214,7 @@ namespace ChatManager.Controllers
         [OnlineUsers.AdminAccess]
         public ActionResult GetChatLogs(bool forceRefresh = false)
         {
-            if (forceRefresh)
+            if (forceRefresh || OnlineUsers.HasChanged() || DB.Users.HasChanged || DB.UserFriendships.HasChanged || DB.UserChats.HasChanged)
             {
                 var chats = DB.UserChats.ToList().OrderByDescending(c => c.Date).ThenBy(c => c.Date.TimeOfDay);
                 return PartialView(chats);

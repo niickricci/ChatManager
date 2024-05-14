@@ -210,6 +210,7 @@
     <Content Include="App_Data\ResetPasswordCommands.json" />
     <Content Include="App_Data\UnverifiedEmails.json" />
     <Content Include="App_Data\Users.json" />
+    <None Include="Properties\PublishProfiles\ChatManagerGerardRicci - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\MDB2023 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\MoviesRepository - Web Deploy.pubxml" />
     <Content Include="Scripts\imageControl-2.0.js" />

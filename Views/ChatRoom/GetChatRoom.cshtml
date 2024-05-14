@@ -119,7 +119,7 @@
                             </span><span class="icon smallerIcon fa fa-trash" title="Effacer ce message">
                             </span>
                         </div>*@
-                    @if (!@msg.IsRead)
+                    @if (msg.IsRead == false)
                     {
                         <div class="unreadIndicator" title="Message non lu"></div>
                     }
