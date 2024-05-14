@@ -97,9 +97,19 @@
             if (msg.UserId != friend.Id)
             {
                 <div class="sentLayout">
-                    <div class="sent" title="@msg.Date.ToString("HH:mm", frenchDates)">
+                    <div class="sent" id="sent_@msg.Id" title="@msg.Date.ToString("HH:mm", frenchDates)">
                         <span class="token">@msg.Message.ToString()</span>
+                        @if (msg.isModified)
+                        {
+                            <span class="token_modified">(Modifié)</span>
+                        }
                     </div>
+                    @*<div class="messageEditorContainer" id="messageEditor">
+                            <textarea style="height: 62px;">@msg.Message.ToString()</textarea>
+                            <span class="icon smallerIcon fa fa-check" title="Modifier">
+                            </span><span class="icon smallerIcon fa fa-trash" title="Effacer ce message">
+                            </span>
+                        </div>*@
                 </div>
             }
             else
@@ -107,10 +117,14 @@
                 <div class="receivedLayout">
                     <div class="received" title="@msg.Date.ToString("HH:mm", frenchDates)">
                         <span class="token">@msg.Message.ToString()</span>
+                        @if (msg.isModified)
+                        {
+                            <span class="token_modified">(Modifié)</span>
+                        }
                     </div>
                 </div>
             }
-            
+
         }
     }
 }

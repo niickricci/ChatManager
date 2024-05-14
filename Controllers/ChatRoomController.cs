@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Configuration;
 using System.Runtime.Remoting.Messaging;
 using System.Web;
 using System.Web.Mvc;
@@ -153,6 +154,25 @@ namespace ChatManager.Controllers
                 return Json(new { success = false, error = "Une erreur s'est produite lors de la modification du nessage" });
 
             }
+
+        }
+
+        public JsonResult GetMessage(int messageId)
+        {
+            int userId = OnlineUsers.GetSessionUser().Id;
+
+
+            var m = DB.UserChats.Get(messageId);
+            if (m != null && m.UserId == userId)
+            {
+                var message = m.Message;
+                return Json(message, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false });
+            }
+
 
         }
     }

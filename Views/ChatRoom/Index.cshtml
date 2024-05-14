@@ -55,7 +55,7 @@
             //initTimeout(120);
             let friendsPanelUpdater = new PartialRefresh("@Url.Action("GetFriendsList")", "friendsListContainer", 5, UpdateFriendsListUIEventCallbacks);
             let messagesPanelUpdater = new PartialRefresh("@Url.Action("GetChatRoom")", "messagesPanel", 5, UpdateMessagesPanelUIEventCallbacks);
-            let currentTargetId = 0;
+            let currentTargetId = @Convert.ToInt32(Session["currentChatTarget"]);
             if (currentTargetId == 0)
                 $("#sendMessagePanel").hide();
 
@@ -128,7 +128,8 @@
                 messagesPanelUpdater.pause();
                 targetedMessageContainer = $(`#sent_${messageId}`);
 
-                messagesPanelUpdater.command(`/Chat/GetMessage?id=${messageId}`, function (messageText) {
+                messagesPanelUpdater.command("@Url.Action("GetMessage")" + "?messageId=" + messageId, function (messageText) {
+                    console.log(messageText)
                     targetedMessageContainer.hide();
                     let input = $(`<textarea>${messageText.trim()}</textarea>"`);
                     let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
@@ -150,13 +151,13 @@
                         event.stopPropagation()
                     })
                     acceptCmd.click(function () {
-                        messagesPanelUpdater.command(`/Chat/UpdateMessage?id=${messageId}&message=${input.val()}`);
+                        messagesPanelUpdater.edit("@Url.Action("UpdateMessage")" + "?messageId=" + messageId + "&" +`message=${input.val()}`);
                         messagesPanelUpdater.restart();
                     })
                     deleteCmd.click(function () {
                         bootbox.confirm("Effacer ce message?", function (result) {
                             if (result) {
-                                messagesPanelUpdater.command(`/Chat/DeleteMessage?id=${messageId}`);
+                                messagesPanelUpdater.delete("@Url.Action("DeleteMessage")" + "?messageId=" + messageId);
                                 messagesPanelUpdater.restart();
                             }
                         })
