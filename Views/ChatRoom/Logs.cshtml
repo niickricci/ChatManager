@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "UserList";
+}
+
+<div class="formLayout">
+    <h2>Conversations</h2>
+    <hr />
+    <div id="ChatLogsContainer">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+            //initTimeout(120);
+            let GetChatLogsList = new PartialRefresh("@Url.Action("GetChatLogs")", "ChatLogsContainer", 5, UpdateCheckboxChangeCallback);
+            function UpdateCheckboxChangeCallback() {
+                // renew checkbox change call back
+                $(".DELETE_MESSAGE").click(
+                    function () {
+                        let chatid = this.id.split('_')[1];
+                        GetChatLogsList.confirmedCommand(this.title + ' ?', "@Url.Action("DeleteChat")" + "?chatid=" + chatid);
+                    }
+                );
+            }
+        })
+    </script>
+}
+
+
+
+
+

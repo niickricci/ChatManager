@@ -292,6 +292,8 @@
     <Content Include="Views\ChatRoom\GetChatRoom.cshtml" />
     <Content Include="Views\Accounts\Edit.cshtml" />
     <Content Include="Views\Accounts\EditForm.cshtml" />
+    <Content Include="Views\ChatRoom\Logs.cshtml" />
+    <Content Include="Views\ChatRoom\GetChatLogs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Notifications\" />

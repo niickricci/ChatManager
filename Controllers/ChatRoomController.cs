@@ -151,10 +151,35 @@ namespace ChatManager.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, error = "Une erreur s'est produite lors de la modification du nessage" });
+                return Json(new { success = false, error = "Une erreur s'est produite lors de la suppression du nessage" });
 
             }
 
+        }
+
+        [OnlineUsers.AdminAccess]
+        public ActionResult DeleteChat(int chatid)
+        {
+            var user = OnlineUsers.GetSessionUser();
+            try
+            {
+                var m = DB.UserChats.Get(chatid);
+                if (m != null && user.IsAdmin)
+                {
+                    DB.UserChats.Delete(chatid);
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = "Une erreur s'est produite lors de la suppression du nessage" });
+
+            }
         }
 
         public JsonResult GetMessage(int messageId)
@@ -174,6 +199,16 @@ namespace ChatManager.Controllers
             }
 
 
+        }
+        [OnlineUsers.AdminAccess]
+        public ActionResult Logs()
+        {
+            return View();
+        }
+        [OnlineUsers.AdminAccess]
+        public ActionResult GetChatLogs() {
+            var chats = DB.UserChats.ToList().OrderByDescending(c=>c.Date).ThenBy(c=>c.Date.TimeOfDay);
+            return PartialView(chats);
         }
     }
 }

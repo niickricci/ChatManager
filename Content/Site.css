@@ -503,3 +503,10 @@ input[type=checkbox] {
     -webkit-text-stroke-width: 0 !important;
     -webkit-text-fill-color: #000;
 }
+.chatLogsContainer {
+    display:flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    height: 50px;
+}

@@ -3,12 +3,23 @@
 }
 
 <div style="display:grid; grid-template-columns: 65px auto; align-items:center">
-    <img src="/Content/UI-Icons/chatRoom.png" style="width:56px" />
+    @if (ChatManager.Models.OnlineUsers.GetSessionUser().IsAdmin)
+    {
+        @*@Helper.ImageCmd("ChatRoom", "Logs", "/Content/UI-Icons/chatRoom.png", "chatRoomIcon", "Journal de conversations")*@
+        <a href="@Url.Action("Logs")">
+            <img src="@Url.Content("/Content/UI-Icons/chatRoom.png")" style="width:56px;" title="Journal de conversations" />
+        </a>
+    }
+    else
+    {
+        <img src="/Content/UI-Icons/chatRoom.png" style="width:56px" />
+    }
     <h3>Salle de discussions</h3>
 </div>
 <hr />
 
 <div class="main">
+
     <div style="display:grid; grid-template-columns:65px auto; column-gap:10px;">
         @*Container d'amis*@
         <div class="friendsListContainer" id="friendsListContainer"
@@ -50,7 +61,7 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-<script>
+    <script>
         $(function () {
             //initTimeout(120);
             let friendsPanelUpdater = new PartialRefresh("@Url.Action("GetFriendsList")", "friendsListContainer", 5, UpdateFriendsListUIEventCallbacks);
@@ -195,7 +206,7 @@
                 sendMessage();
             })
         })
-</script>
+    </script>
 
     @*<script>
             $(function () {
