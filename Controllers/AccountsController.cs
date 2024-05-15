@@ -545,7 +545,7 @@ namespace ChatManager.Controllers
             {
                 Session["editTarget"] = id;
                 ViewBag.UserTypes = new SelectList(DB.UserTypes.ToList(), "Id", "Name", user.UserTypeId);
-                Session["LastAction"] = "https://localhost:44318/Friendships/FriendsList";
+                Session["LastAction"] = "/Friendships/FriendsList";
                 return View(user);
             }
             return View();
@@ -558,10 +558,13 @@ namespace ChatManager.Controllers
         {
             var oldUser = DB.Users.FindUser(user.Id);
             oldUser.Id = user.Id;
+            oldUser.FirstName = user.FirstName; 
+            oldUser.LastName = user.LastName;
             oldUser.Verified = user.Verified;
             oldUser.UserTypeId = user.UserTypeId;
             oldUser.Blocked = user.Blocked;
-            oldUser.CreationDate = user.CreationDate;
+            oldUser.Avatar = user.Avatar;
+            //oldUser.CreationDate = user.CreationDate;
 
             string newEmail = "";
                 if (oldUser.Email != user.Email)
