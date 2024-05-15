@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.WebPages.Html;
 using ChatManager.Models;
 using Mail;
 
@@ -15,8 +16,12 @@ namespace ChatManager.Controllers
         [HttpPost]
         public JsonResult EmailAvailable(string email)
         {
+           
             User user = OnlineUsers.GetSessionUser();
             int excludedId = user != null ? user.Id : 0;
+            if(Session["editTarget"] != null){
+                excludedId = Convert.ToInt32(Session["editTarget"]);
+            }
             return Json(DB.Users.EmailAvailable(email, excludedId));
         }
 
@@ -384,7 +389,7 @@ namespace ChatManager.Controllers
             OnlineUsers.RemoveSessionUser();
             return RedirectToAction("Login");
         }
-        
+
         [OnlineUsers.AdminAccess]
         public ActionResult LoginsJournal()
         {
@@ -531,5 +536,86 @@ namespace ChatManager.Controllers
 
         }
         #endregion
+        [OnlineUsers.AdminAccess]
+        public ActionResult Edit(int id)
+        {
+            var user = DB.Users.FindUser(id);
+
+            if (user != null)
+            {
+                Session["editTarget"] = id;
+                ViewBag.UserTypes = new SelectList(DB.UserTypes.ToList(), "Id", "Name", user.UserTypeId);
+                Session["LastAction"] = "/Friendships/FriendsList";
+                return View(user);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken()]
+        [OnlineUsers.AdminAccess]
+        public ActionResult Edit(User user)
+        {
+            var oldUser = DB.Users.FindUser(user.Id);
+            oldUser.Id = user.Id;
+            oldUser.FirstName = user.FirstName; 
+            oldUser.LastName = user.LastName;
+            oldUser.Verified = user.Verified;
+            oldUser.UserTypeId = user.UserTypeId;
+            oldUser.Blocked = user.Blocked;
+            oldUser.Avatar = user.Avatar;
+            //oldUser.CreationDate = user.CreationDate;
+
+            string newEmail = "";
+                if (oldUser.Email != user.Email)
+                {
+                    newEmail = user.Email;
+                    oldUser.Email = oldUser.ConfirmEmail = user.Email;
+                }
+
+                if (DB.Users.Update(oldUser))
+                {
+                    if (newEmail != "")
+                    {
+                        SendEmailChangedVerification(oldUser, newEmail);
+                        return Redirect((string)Session["LastAction"]);
+                    }
+                    else
+                        return Redirect((string)Session["LastAction"]);
+                }
+            
+            ViewBag.UserTypes = new SelectList(DB.UserTypes.ToList(), "Id", "Name", user.UserTypeId);
+            return View(user);
+        }
+
+        public JsonResult UserHasNotifications()
+        {
+            var messages = DB.UserChats.ToList().Where(m=>m.FriendId == OnlineUsers.GetSessionUser().Id);
+            if (messages.Any(m => m.IsRead == false))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            //if (!OnlineUsers.GetSessionUser().HasNotification) { 
+            //    return Json(true, JsonRequestBehavior.AllowGet); 
+            //} 
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetUserNotifications()
+        {
+            var frenchDates = new System.Globalization.CultureInfo("fr-FR");
+            var messages = DB.UserChats.ToList().Where(m => m.FriendId == OnlineUsers.GetSessionUser().Id);
+            var msgNotRead = messages.Where(m => m.IsRead == false);
+            msgNotRead = msgNotRead.OrderByDescending(m => m.Date).ThenBy(m => m.Date.TimeOfDay);
+            List<string> listMsg = new List<string> { };
+
+            foreach (var msg in msgNotRead)
+            {
+                listMsg.Add($"[ {msg.Date.ToString("d/MM/yy - HH:mm", frenchDates)} ] Nouveau message de {DB.Users.FindUser(msg.UserId).GetFullName()}");
+                //listMsg.Add($"Nouveau message de {DB.Users.FindUser(msg.UserId).GetFullName()}{msg.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)} - {DB.Users.FindUser(msg.UserId).GetFullName()}: {msg.Message}");
+            }
+
+            return Json(listMsg, JsonRequestBehavior.AllowGet);
+        }
     }
 }

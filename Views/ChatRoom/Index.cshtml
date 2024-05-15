@@ -3,12 +3,23 @@
 }
 
 <div style="display:grid; grid-template-columns: 65px auto; align-items:center">
-    <img src="/Content/UI-Icons/chatRoom.png" style="width:56px" />
+    @if (ChatManager.Models.OnlineUsers.GetSessionUser().IsAdmin)
+    {
+        @*@Helper.ImageCmd("ChatRoom", "Logs", "/Content/UI-Icons/chatRoom.png", "chatRoomIcon", "Journal de conversations")*@
+        <a href="@Url.Action("Logs")">
+            <img src="@Url.Content("/Content/UI-Icons/chatRoom.png")" style="width:56px;" title="Journal de conversations" />
+        </a>
+    }
+    else
+    {
+        <img src="/Content/UI-Icons/chatRoom.png" style="width:56px" />
+    }
     <h3>Salle de discussions</h3>
 </div>
 <hr />
 
 <div class="main">
+
     <div style="display:grid; grid-template-columns:65px auto; column-gap:10px;">
         @*Container d'amis*@
         <div class="friendsListContainer" id="friendsListContainer"
@@ -55,7 +66,7 @@
             //initTimeout(120);
             let friendsPanelUpdater = new PartialRefresh("@Url.Action("GetFriendsList")", "friendsListContainer", 5, UpdateFriendsListUIEventCallbacks);
             let messagesPanelUpdater = new PartialRefresh("@Url.Action("GetChatRoom")", "messagesPanel", 5, UpdateMessagesPanelUIEventCallbacks);
-            let currentTargetId = 0;
+            let currentTargetId = @Convert.ToInt32(Session["currentChatTarget"]);
             if (currentTargetId == 0)
                 $("#sendMessagePanel").hide();
 
@@ -95,12 +106,12 @@
                     sendMessage();
                 }
             });
-            //$('#message').focus(function (event) {
-            //    ajaxActionCall("/chat/IsTyping");
-            //});
-            //$('#message').blur(function (event) {
-            //    ajaxActionCall("/chat/StopTyping");
-            //});
+            $('#message').focus(function (event) {
+                ajaxActionCall("@Url.Action("IsTyping")");
+            });
+            $('#message').blur(function (event) {
+                ajaxActionCall("@Url.Action("StopTyping")");
+            });
             $(document).on('keyup', function (event) {
                 if (event.key == "Escape") {
                     $("#message").val("");
@@ -109,60 +120,61 @@
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-            //let editor = null;
-            //let targetedMessageContainer = null;
+            let editor = null;
+            let targetedMessageContainer = null;
 
-            //function deleteMessageEditor() {
-            //    if (editor != null) {
-            //        editor.remove();
-            //        messagesPanelUpdater.restart();
-            //        editor = null;
-            //    }
-            //    if (targetedMessageContainer != null)
-            //        targetedMessageContainer.show();
-            //}
-            //$(document).click(function () { deleteMessageEditor(); })
+            function deleteMessageEditor() {
+                if (editor != null) {
+                    editor.remove();
+                    messagesPanelUpdater.restart();
+                    editor = null;
+                }
+                if (targetedMessageContainer != null)
+                    targetedMessageContainer.show();
+            }
+            $(document).click(function () { deleteMessageEditor(); })
 
-            //function createMessageEditor(messageId) {
-            //    deleteMessageEditor();
-            //    messagesPanelUpdater.pause();
-            //    targetedMessageContainer = $(`#sent_${messageId}`);
+            function createMessageEditor(messageId) {
+                deleteMessageEditor();
+                messagesPanelUpdater.pause();
+                targetedMessageContainer = $(`#sent_${messageId}`);
 
-            //    messagesPanelUpdater.command(`/Chat/GetMessage?id=${messageId}`, function (messageText) {
-            //        targetedMessageContainer.hide();
-            //        let input = $(`<textarea>${messageText.trim()}</textarea>"`);
-            //        let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
-            //        let deleteCmd = $(`<span class="icon smallerIcon fa fa-trash" title="Effacer ce message"></span>`);
-            //        editor = $(`<div class="messageEditorContainer" id="messageEditor" >`);
-            //        editor.append(input, acceptCmd, deleteCmd);
-            //        editor.insertAfter(targetedMessageContainer);
-            //        input.height(input[0].scrollHeight - 20);
-            //        input.focus();
-            //        input.val(input.val() + ' ');
-            //        input.keyup(function (event) {
-            //            if (event.key == "Escape") {
-            //                targetedMessageContainer.show();
-            //                deleteMessageEditor();
-            //                messagesPanelUpdater.restart();
-            //            }
-            //        })
-            //        input.click(function (event) {
-            //            event.stopPropagation()
-            //        })
-            //        acceptCmd.click(function () {
-            //            messagesPanelUpdater.command(`/Chat/UpdateMessage?id=${messageId}&message=${input.val()}`);
-            //            messagesPanelUpdater.restart();
-            //        })
-            //        deleteCmd.click(function () {
-            //            bootbox.confirm("Effacer ce message?", function (result) {
-            //                if (result) {
-            //                    messagesPanelUpdater.command(`/Chat/DeleteMessage?id=${messageId}`);
-            //                    messagesPanelUpdater.restart();
-            //                }
-            //            })
-            //        })
-            //    })
-            //}
+                messagesPanelUpdater.command("@Url.Action("GetMessage")" + "?messageId=" + messageId, function (messageText) {
+                    console.log(messageText)
+                    targetedMessageContainer.hide();
+                    let input = $(`<textarea>${messageText.trim()}</textarea>"`);
+                    let acceptCmd = $(`<span class="icon smallerIcon fa fa-check" title="Modifier"></span>`);
+                    let deleteCmd = $(`<span class="icon smallerIcon fa fa-trash" title="Effacer ce message"></span>`);
+                    editor = $(`<div class="messageEditorContainer" id="messageEditor" >`);
+                    editor.append(input, acceptCmd, deleteCmd);
+                    editor.insertAfter(targetedMessageContainer);
+                    input.height(input[0].scrollHeight - 20);
+                    input.focus();
+                    input.val(input.val() + ' ');
+                    input.keyup(function (event) {
+                        if (event.key == "Escape") {
+                            targetedMessageContainer.show();
+                            deleteMessageEditor();
+                            messagesPanelUpdater.restart();
+                        }
+                    })
+                    input.click(function (event) {
+                        event.stopPropagation()
+                    })
+                    acceptCmd.click(function () {
+                        messagesPanelUpdater.edit("@Url.Action("UpdateMessage")" + "?messageId=" + messageId + "&" +`message=${input.val()}`);
+                        messagesPanelUpdater.restart();
+                    })
+                    deleteCmd.click(function () {
+                        bootbox.confirm("Effacer ce message?", function (result) {
+                            if (result) {
+                                messagesPanelUpdater.delete("@Url.Action("DeleteMessage")" + "?messageId=" + messageId);
+                                messagesPanelUpdater.restart();
+                            }
+                        })
+                    })
+                })
+            }
 
             function UpdateMessagesPanelUIEventCallbacks() {
                 $("#typing").hide();
@@ -181,64 +193,18 @@
                 });
             }
 
-            //setInterval(() => { ajaxActionCall("/Chat/IsTargetTyping", UpdateTyping); }, 3000);
+            setInterval(() => { ajaxActionCall("@Url.Action("IsTargetTyping")", UpdateTyping); }, 3000);
 
-            //function UpdateTyping(show) {
-            //    if (show)
-            //        $("#typing").show();
-            //    else
-            //        $("#typing").hide();
-            //}
+            function UpdateTyping(show) {
+                if (show)
+                    $("#typing").show();
+                else
+                    $("#typing").hide();
+            }
 
             $("#send").click(function () {
                 sendMessage();
             })
         })
 </script>
-
-    @*<script>
-            $(function () {
-                let NotificationsDisabled = false; //On/Off
-                if (!NotificationsDisabled) {
-                    setInterval(() => {
-                        $.ajax({
-                            url: "/Accounts/UserHasNotifications",
-                            dataType: "text",
-                            success: (hasNotifications) => {
-                                console.log("Has notification : ", JSON.parse(hasNotifications))
-                                if (JSON.parse(hasNotifications))
-                                    $("#NotificationsIcon").addClass("blink");
-                                else
-                                    $("#NotificationsIcon").removeClass("blink");
-                            }
-                        })
-                    }, 2 * 1000)
-                }
-                $("#NotificationsIcon").click(function () {
-                    if (!NotificationsDisabled) {
-                        $.ajax({
-                            url: "/Accounts/GetUserNotifications",
-                            dataType: "text",
-                            success: (notifications) => {
-                                notifications = JSON.parse(notifications);
-                                console.log("Messages: ", notifications);
-                                if (notifications.length > 0) {
-                                    let messages = "";
-                                    notifications.forEach(message => {
-                                        messages += message + "<br>";
-                                    })
-                                    bootbox.alert(messages);
-                                }
-                                else
-                                    bootbox.alert("Aucune notification");
-                                $("#NotificationsIcon").removeClass("blink");
-                            }
-                        })
-                    } else {
-                        bootbox.alert("Notifications désactivées");
-                    }
-                })
-            })
-
-        </script>*@
 }

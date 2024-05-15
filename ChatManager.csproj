@@ -210,6 +210,7 @@
     <Content Include="App_Data\ResetPasswordCommands.json" />
     <Content Include="App_Data\UnverifiedEmails.json" />
     <Content Include="App_Data\Users.json" />
+    <None Include="Properties\PublishProfiles\ChatManagerGerardRicci - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\MDB2023 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\MoviesRepository - Web Deploy.pubxml" />
     <Content Include="Scripts\imageControl-2.0.js" />
@@ -290,10 +291,12 @@
     <Content Include="Views\FriendShips\GetFriendList.cshtml" />
     <Content Include="Views\ChatRoom\GetFriendsList.cshtml" />
     <Content Include="Views\ChatRoom\GetChatRoom.cshtml" />
+    <Content Include="Views\Accounts\Edit.cshtml" />
+    <Content Include="Views\Accounts\EditForm.cshtml" />
+    <Content Include="Views\ChatRoom\Logs.cshtml" />
+    <Content Include="Views\ChatRoom\GetChatLogs.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Notifications\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

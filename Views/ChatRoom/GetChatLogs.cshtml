@@ -1,0 +1,35 @@
+﻿@model IEnumerable<UserChats>
+@{
+    var frenchDates = new System.Globalization.CultureInfo("fr-FR");
+}
+
+@foreach (var chat in Model)
+{
+    //if (item.Id != ChatManager.Models.OnlineUsers.GetSessionUser().Id)
+    //{
+    //var emailReference = "mailto:" + item.Email;
+    //bool isOnline = ChatManager.Models.OnlineUsers.IsOnLine(item.Id);
+    var senderId = chat.UserId;
+    var receiverId = chat.FriendId;
+    var sender = ChatManager.Models.DB.Users.FindUser(senderId);
+    var receiver = ChatManager.Models.DB.Users.FindUser(receiverId);
+
+
+    <div class="chatLogsContainer" style="font-size:14px;">
+        <!--Avatar du sender-->
+
+        @Helper.AvatarUserWithoutName(sender, "UserSmallAvatar")
+
+        <!--Avatar du receiver-->
+        @Helper.AvatarUserWithoutName(receiver, "UserSmallAvatar")
+
+        <!--Delete Opotion-->
+        <div id="delete_@chat.Id" class="DELETE_MESSAGE icon blue fa fa-times-circle" title="Effacer le message de @sender.GetFullName()"></div>
+        <!--Message-->
+        <div class="sent" style="cursor: default" title="@chat.Date.ToString("d MMMM yyyy - HH:mm", frenchDates)">
+            @*<span class="token">@chat.Message.ToString()</span>*@
+            @Helper.ParseContent(chat.Message)
+        </div>
+    </div>
+    @*}*@
+}

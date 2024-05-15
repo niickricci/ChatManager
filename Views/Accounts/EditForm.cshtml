@@ -1,0 +1,56 @@
+﻿@model ChatManager.Models.User
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+<div class="formLayout">
+
+    <fieldset>
+        <div class="legend">Identification</div>
+        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = @Html.DisplayNameFor(model => model.FirstName) } })
+        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+        <br />
+        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = @Html.DisplayNameFor(model => model.LastName) } })
+        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+    </fieldset>
+    <fieldset>
+        <div class="legend">@Html.DisplayNameFor(model => model.Email)</div>
+        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = @Html.DisplayNameFor(model => model.Email) } })
+        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        <br />
+        @Html.EditorFor(model => model.ConfirmEmail, new { htmlAttributes = new { @class = "form-control", placeholder = @Html.DisplayNameFor(model => model.ConfirmEmail) } })
+        @Html.ValidationMessageFor(model => model.ConfirmEmail, "", new { @class = "text-danger" })
+    </fieldset>
+    <fieldset>
+        <div class="legend">@Html.DisplayNameFor(model => model.Avatar)</div>
+        @Helper.ImageUploader("Avatar", Model.Avatar, "Cliquez pour choisir votre avatar")
+        @Html.ValidationMessageFor(model => model.Avatar, "", new { @class = "text-danger" })
+    </fieldset>
+    <fieldset>
+        <div class="legend">Type d'usager</div>
+        @Html.RadioButtonsGroupFor(model => model.UserTypeId, (SelectList)ViewBag.UserTypes)
+        @Html.ValidationMessageFor(model => model.UserTypeId, "", new { @class = "text-danger" })
+    </fieldset>
+    <fieldset>
+        <div class="legend">
+            @Html.DisplayNameFor(model => model.Verified)
+            @Html.CheckBoxFor(model => model.Verified, new { @checked = Model.Verified })
+        </div>
+        <div class="legend">
+            @Html.DisplayNameFor(model => model.Blocked)
+            @Html.CheckBoxFor(model => model.Blocked, new { @checked = Model.Blocked })
+        </div>
+
+        @Html.ValidationMessageFor(model => model.UserTypeId, "", new { @class = "text-danger" })
+    </fieldset>
+
+    <input type="submit" value="Enregistrer" class="btn btn-default" />
+    <hr />
+    <a href="@((string)Session["LastAction"])">Retour</a>
+</div>
+}
+

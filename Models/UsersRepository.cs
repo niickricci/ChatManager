@@ -414,6 +414,24 @@ namespace ChatManager.Models
             }
             return null;
         }
+
+        public IEnumerable<UserChats> GetUserChatsByChatId(int applicantId, int messageId)
+        {
+            User userApplicant = DB.Users.Get(applicantId);
+            UserChats messageID = DB.UserChats.Get(messageId);
+            var listChat = DB.UserChats.ToList();
+
+            if (userApplicant != null && messageID != null)
+            {
+                if (listChat.Any(l => l.UserId == userApplicant.Id && l.Id == messageID.Id))
+                {
+                    var applicantMessages = listChat.ToList().Where(c => c.UserId == userApplicant.Id && c.Id == messageID.Id);
+                    return applicantMessages;
+                }
+                return null;
+            }
+            return null;
+        }
         //----------------------------------------------------------------------------------------------------
     }
 }
